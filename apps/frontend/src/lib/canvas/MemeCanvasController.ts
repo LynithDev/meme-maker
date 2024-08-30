@@ -35,7 +35,7 @@ class MemeCanvasController {
     constructor(
         private canvas: HTMLCanvasElement,
     ) {
-        const ctx = canvas.getContext("2d");
+        const ctx = canvas.getContext("2d", { alpha: false });
         if (!ctx)
             throw new Error("Canvas context not found");
 
@@ -65,6 +65,11 @@ class MemeCanvasController {
 
     // Listeners
     private mouseEvent(event: MouseEvent, fn: (x: number, y: number) => void) {
+        if (event.button !== 0)
+            return;
+
+        this.requestFrame();
+
         const rect = this.canvas.getBoundingClientRect();
         const x = MathHelper.clamp(event.clientX - rect.left, 0, this.canvas.width);
         const y = MathHelper.clamp(event.clientY - rect.top, 0, this.canvas.height);
@@ -178,6 +183,7 @@ class MemeCanvasController {
 
     public updateElementSetting<T extends Record<string, ValidOptionTypes>, K extends keyof T>(element: MemeElement<T>, key: K, value: T[K]) {
         element.settings[key] = value;
+        this.requestFrame();
     }
 
     // Other
@@ -282,6 +288,10 @@ class MemeCanvasController {
             return;
 
         this.running = true;
+        this.requestFrame();
+    }
+
+    private requestFrame() {
         requestAnimationFrame(timestamp => this.renderLoop(timestamp));
     }
 
@@ -295,7 +305,7 @@ class MemeCanvasController {
         this._renderer.draw();
 
         this._lastTimeRendered = timestamp;
-        requestAnimationFrame(timestamp => this.renderLoop(timestamp));
+        // requestAnimationFrame(timestamp => this.renderLoop(timestamp));
     }
 
     public stopLoop() {
