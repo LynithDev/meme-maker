@@ -45,10 +45,6 @@ abstract class MemeElement<T extends Record<string, ValidOptionTypes> = Record<s
     private offsetX: number = 0;
     private offsetY: number = 0;
 
-    // This is the bottom right corner of the element
-    private beforeResizeX: number = 0;
-    private beforeResizeY: number = 0;
-
     private handle: MemeElementHandle | null = null;
 
     private _width: number = 0;
@@ -114,102 +110,82 @@ abstract class MemeElement<T extends Record<string, ValidOptionTypes> = Record<s
     public prepareResize(handle: MemeElementHandle | null, x: number, y: number): void {
         this.offsetX = Math.round(x - this.x);
         this.offsetY = Math.round(y - this.y);
-        this.beforeResizeX = this.x + this.width;
-        this.beforeResizeY = this.y + this.height;
         this.handle = handle;
     }
 
     public resize(x: number, y: number): void {
-        const lockRatio = this.controller.holdingShift;
-
-        if (lockRatio) {
-            const width = this.beforeResizeX - this.x;
-            const height = this.beforeResizeY - this.y;
-
-            switch (this.handle) {
-                // case MemeElementHandle.TOP_LEFT:
-                //     this.x = Math.min(this.controller.offsetX - this.offsetX, this.beforeResizeX - this.getMinWidth() * (this.beforeResizeY - y) / this.getMinHeight());
-                //     this.width = this.beforeResizeX - this.x;
-
-                //     this.y = this.beforeResizeY - this.getMinHeight() * (this.width / this.getMinWidth());
-                //     this.height = this.beforeResizeY - this.y;
-                //     break;
-
-                // case MemeElementHandle.TOP_RIGHT:
-                //     this.width = x - this.x;
-
-                //     this.y = this.beforeResizeY - this.getMinHeight() * (this.width / this.getMinWidth());
-                //     this.height = this.beforeResizeY - this.y;
-                //     break;
-
-                case MemeElementHandle.BOTTOM_LEFT: {
-                    // this.height = y - this.y;
-
-                    // this.x = this.beforeResizeX - this.getMinWidth() * (this.height / this.getMinHeight());
-                    // this.width = this.beforeResizeX - this.x;
-                    // break;
-                    const xDist = this.beforeResizeX - x;
-                    const yDist = y - this.y;
-
-                    if (xDist / yDist > width / height) {
-                        this.width = xDist;
-                        this.y = this.beforeResizeY - this.getMinHeight() * (this.width / this.getMinWidth());
-                        this.height = this.beforeResizeY - this.y;
-                    }
-                    else {
-                        this.height = yDist;
-                        this.x = this.beforeResizeX - this.getMinWidth() * (this.height / this.getMinHeight());
-                        this.width = this.beforeResizeX - this.x;
-                    }
-                    break;
-                }
-
-                case MemeElementHandle.BOTTOM_RIGHT: {
-                    const xDist = x - this.x;
-                    const yDist = y - this.y;
-
-                    if (xDist / yDist > width / height) {
-                        this.width = xDist;
-                        this.height = height * (this.width / width);
-                    }
-                    else {
-                        this.height = yDist;
-                        this.width = width * (this.height / height);
-                    }
-                    break;
-                }
-            }
-
-            return;
-        }
+        // TODO: Implement aspect ratio locking
+        // const lockRatio = this.controller.holdingShift;
 
         switch (this.handle) {
-            case MemeElementHandle.TOP_LEFT:
-                this.x = Math.min(x, this.beforeResizeX - this.getMinWidth());
-                this.width = this.beforeResizeX - x;
+            case MemeElementHandle.TOP_LEFT: {
+                const newX = Math.round(x - this.offsetX);
+                const newY = Math.round(y - this.offsetY);
 
-                this.y = Math.min(y, this.beforeResizeY - this.getMinHeight());
-                this.height = this.beforeResizeY - y;
+                const newWidth = this.x + this.width - newX;
+                const newHeight = this.y + this.height - newY;
+
+                if (newWidth >= this.getMinWidth()) {
+                    this.width = newWidth;
+                    this.x = newX;
+                }
+
+                if (newHeight >= this.getMinHeight()) {
+                    this.height = newHeight;
+                    this.y = newY;
+                }
+
                 break;
+            }
 
-            case MemeElementHandle.TOP_RIGHT:
-                this.width = x - this.x;
+            case MemeElementHandle.TOP_RIGHT: {
+                const newX = this.x;
+                const newY = Math.round(y - this.offsetY);
 
-                this.y = Math.min(y, this.beforeResizeY - this.getMinHeight());
-                this.height = this.beforeResizeY - y;
+                const newWidth = x - this.x;
+                const newHeight = this.y + this.height - newY;
+
+                if (newWidth >= this.getMinWidth())
+                    this.width = newWidth;
+
+                if (newHeight >= this.getMinHeight()) {
+                    this.height = newHeight;
+                    this.y = newY;
+                }
+
                 break;
+            }
 
-            case MemeElementHandle.BOTTOM_LEFT:
-                this.x = Math.min(x, this.beforeResizeX - this.getMinWidth());
-                this.width = this.beforeResizeX - x;
+            case MemeElementHandle.BOTTOM_LEFT: {
+                const newX = Math.round(x - this.offsetX);
+                const newY = this.y;
 
-                this.height = y - this.y;
+                const newWidth = this.x + this.width - newX;
+                const newHeight = y - this.y;
+
+                if (newWidth >= this.getMinWidth()) {
+                    this.width = newWidth;
+                    this.x = newX;
+                }
+
+                if (newHeight >= this.getMinHeight())
+                    this.height = newHeight;
+
                 break;
+            }
 
-            case MemeElementHandle.BOTTOM_RIGHT:
-                this.width = x - this.x;
-                this.height = y - this.y;
+            case MemeElementHandle.BOTTOM_RIGHT: {
+                const newWidth = x - this.x;
+                const newHeight = y - this.y;
+
+                if (newWidth >= this.getMinWidth())
+                    this.width = newWidth;
+
+                if (newHeight >= this.getMinHeight())
+                    this.height = newHeight;
+
                 break;
+            }
         }
     }
 

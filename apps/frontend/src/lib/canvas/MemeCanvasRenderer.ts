@@ -14,8 +14,13 @@ class MemeCanvasRenderer {
     public draw() {
         this.drawBackground();
 
+        this.ctx.save();
         this.drawElements();
+        this.ctx.restore();
+
+        this.ctx.save();
         this.drawSelectionBox();
+        this.ctx.restore();
 
         this.drawFramerate();
     }
@@ -61,11 +66,11 @@ class MemeCanvasRenderer {
         this.ctx.font = "16px sans-serif";
         const text = `${this.controller.fps.toFixed(2)} fps`;
 
-        this.ctx.strokeStyle = "white";
+        this.ctx.strokeStyle = "black";
         this.ctx.lineWidth = 2;
         this.ctx.strokeText(text, 4, 16);
 
-        this.ctx.fillStyle = "black";
+        this.ctx.fillStyle = "white";
         this.ctx.fillText(text, 4, 16);
     }
 
