@@ -1,0 +1,10 @@
+{
+    "name": "@meme-gen/backend",
+    "version": "0.0.0",
+    "description": "online-multiplayer-games",
+    "author": "LynithDev",
+    "license": "MIT",
+    "scripts": {
+        "dev": ""
+    }
+}

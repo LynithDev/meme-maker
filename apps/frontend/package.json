@@ -1,0 +1,24 @@
+{
+    "name": "@meme-gen/frontend",
+    "type": "module",
+    "version": "0.0.1",
+    "private": true,
+    "scripts": {
+        "dev": "vite dev",
+        "build": "vite build",
+        "preview": "vite preview",
+        "check": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json",
+        "check:watch": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json --watch",
+        "lint": "prettier --check . && eslint .",
+        "format": "prettier --write ."
+    },
+    "devDependencies": {
+        "@sveltejs/adapter-auto": "^3.0.0",
+        "@sveltejs/kit": "^2.0.0",
+        "@sveltejs/vite-plugin-svelte": "^3.0.0",
+        "@unocss/preset-uno": "^0.62.3",
+        "svelte": "^4.2.7",
+        "svelte-check": "^3.6.0",
+        "unocss": "^0.62.3"
+    }
+}
