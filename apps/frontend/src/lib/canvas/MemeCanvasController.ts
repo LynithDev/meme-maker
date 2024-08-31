@@ -1,6 +1,6 @@
 import MemeCanvasRenderer from "./MemeCanvasRenderer";
 import type MemeElement from "./MemeElement";
-import type { MemeElementConstructor, MemeElementHandle, MemeElementOptions, ValidOptionTypes } from "./MemeElement";
+import type { MemeElementConstructor, MemeElementHandle, ValidOptionTypes } from "./MemeElement";
 import MathHelper from "$lib/math";
 import { getRecommendedCanvasWidth } from "$lib/device";
 
@@ -30,7 +30,8 @@ class MemeCanvasController {
     public holdingShift: boolean = false;
     public holdingCtrl: boolean = false;
 
-    public onSelectedElementsChange: (elements: MemeElement[]) => void = () => {};
+    public onSelectedElementsChange: () => void = () => {};
+    public onElementsUpdated: () => void = () => {};
 
     constructor(
         private canvas: HTMLCanvasElement,
@@ -98,11 +99,11 @@ class MemeCanvasController {
                 if (this.selectedElements.includes(foundElement)) {
                     const index = this.selectedElements.indexOf(foundElement);
                     this.selectedElements.splice(index, 1);
-                    this.selectedElementsChanged();
+                    this.onSelectedElementsChange();
                 }
                 else {
                     this.selectedElements.push(foundElement);
-                    this.selectedElementsChanged();
+                    this.onSelectedElementsChange();
                 }
 
                 return;
@@ -118,7 +119,7 @@ class MemeCanvasController {
             }
 
             this.selectedElements = [foundElement];
-            this.selectedElementsChanged();
+            this.onSelectedElementsChange();
             this.startDrag(foundElement, x, y);
             foundElement.onPress(x, y);
             return;
@@ -128,8 +129,12 @@ class MemeCanvasController {
     }
 
     private onRelease(x: number, y: number) {
+        if (this.dragging || this.resizing)
+            this.onElementsUpdated();
+
         this.dragging = false;
         this.resizing = false;
+
         if (this.selecting === true) {
             this.selecting = false;
             this.selectAllElementsInArea(this.offsetX, this.offsetY, x - this.offsetX, y - this.offsetY);
@@ -181,8 +186,18 @@ class MemeCanvasController {
         element.drag(x, y);
     }
 
-    public updateElementSetting<T extends Record<string, ValidOptionTypes>, K extends keyof T>(element: MemeElement<T>, key: K, value: T[K]) {
-        element.settings[key] = value;
+    public updateElement<T extends Record<string, ValidOptionTypes>, K extends keyof T>(element: MemeElement<T>, key: K, value: T[K]) {
+        if (Object.prototype.hasOwnProperty.call(element.settings, key)) {
+            element.settings[key] = value;
+            element.onSettingChanged(key);
+        }
+        else {
+            const keys = Object.keys(element);
+
+            if (keys.includes(key as string))
+                (element as any)[key] = value;
+        }
+
         this.requestFrame();
     }
 
@@ -204,7 +219,7 @@ class MemeCanvasController {
         const newHeight = Math.abs(height);
 
         this.selectedElements = this.elementsInside(newX, newY, newWidth, newHeight);
-        this.selectedElementsChanged();
+        this.onSelectedElementsChange();
     }
 
     // Utility
@@ -278,10 +293,6 @@ class MemeCanvasController {
         }
     }
 
-    public selectedElementsChanged() {
-        this.onSelectedElementsChange(this.selectedElements);
-    }
-
     // Loop
     public startLoop() {
         if (this.running === true)
@@ -300,12 +311,12 @@ class MemeCanvasController {
             return;
 
         const deltaTime = timestamp - this._lastTimeRendered;
-        this._fps = 1000 / deltaTime;
+        if (deltaTime > 0)
+            this._fps = 1000 / deltaTime;
 
         this._renderer.draw();
 
         this._lastTimeRendered = timestamp;
-        // requestAnimationFrame(timestamp => this.renderLoop(timestamp));
     }
 
     public stopLoop() {

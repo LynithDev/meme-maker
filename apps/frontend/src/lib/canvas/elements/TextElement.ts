@@ -1,4 +1,4 @@
-import MemeElement, { type ExtendedString, type Filterable, type MemeElementOptions, type ValidateOptions } from "../MemeElement";
+import MemeElement, { type ExtendedString, type Filterable, type ValidateOptions } from "../MemeElement";
 import type MemeCanvasController from "../MemeCanvasController";
 import { lineBreakedText } from "$lib/canvas";
 

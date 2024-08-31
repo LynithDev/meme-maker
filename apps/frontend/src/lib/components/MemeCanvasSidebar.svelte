@@ -2,62 +2,55 @@
     import ElementSetting from "./ElementSetting.svelte";
     import type MemeCanvasController from "$lib/canvas/MemeCanvasController";
     import type MemeElement from "$lib/canvas/MemeElement";
-    import type { MemeElementOptions, ValidOptionTypes } from "$lib/canvas/MemeElement";
+    import type { Settings, ValidOptionTypes } from "$lib/canvas/MemeElement";
     import { sameValues } from "$lib/helpers";
 
     export let controller: MemeCanvasController;
 
-    let settings: MemeElementOptions;
-    let mixed: string[];
+    let settings: Settings | null = null;
+    let mixed: string[] = [];
 
-    controller.onSelectedElementsChange = (list) => {
-        [settings, mixed] = getSimilarSettings(list);
+    controller.onSelectedElementsChange = () => updated(controller.selectedElements);
+    controller.onElementsUpdated = () => updated(controller.selectedElements);
+
+    function updated(list: MemeElement[]) {
+        if (list.length === 0) {
+            settings = null;
+            mixed = [];
+            return;
+        }
+
+        const firstElement = list[0]!;
+        const baseSettings = getElementSettings(firstElement);
+
+        for (let i = 1; i < list.length; i++) {
+            const element = list[i]!;
+            const elementSettings = getElementSettings(element);
+
+            if (element.constructor === firstElement.constructor) {
+                for (const key in elementSettings)
+                    if (!sameValues(baseSettings[key], elementSettings[key]))
+                        mixed.push(key);
+            }
+            else {
+                mixed = [];
+                break;
+            }
+        }
+
+        settings = baseSettings;
     };
 
-    function getSimilarSettings(elements: MemeElement[]): [MemeElementOptions, string[]] {
-        const settings: Record<string, ValidOptionTypes> = {};
-        const mixed: string[] = [];
-
-        // HELL WHAT IS THIS
-        for (const element of elements)
-            loop: for (const [key, value] of Object.entries(element.settings).concat(Object.entries(element.options)))
-                if (key in settings) {
-                    if (typeof settings[key] !== typeof value) {
-                        delete settings[key];
-                        continue loop;
-                    }
-                    else if (typeof value !== "object" && typeof value === typeof settings[key]) {
-                        if (settings[key] !== value)
-                            mixed.push(key);
-
-                        continue loop;
-                    }
-
-                    // @ts-ignore
-                    const keysA = Object.keys(settings[key]);
-                    const keysB = Object.keys(value);
-
-                    if (keysA.length !== keysB.length) {
-                        delete settings[key];
-                        continue loop;
-                    }
-
-                    // Check if the values are the same
-                    keysA.forEach((k) => {
-                        if (!sameValues((settings[key] as any)[k], (value as any)[k]))
-                            mixed.push(key);
-                    });
-                }
-                else {
-                    settings[key] = value;
-                }
-
-        return [settings as unknown as MemeElementOptions, mixed];
+    function getElementSettings(element: MemeElement): Settings {
+        return {
+            ...element.getCommonProperties(),
+            ...element.settings,
+        };
     }
 
     const onChange = (key: string, newValue: ValidOptionTypes) => {
         controller.selectedElements.forEach((element) => {
-            controller.updateElementSetting(element, key, newValue);
+            controller.updateElement(element, key, newValue);
         });
     };
 </script>

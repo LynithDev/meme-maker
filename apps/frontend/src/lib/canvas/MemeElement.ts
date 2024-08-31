@@ -19,15 +19,10 @@ export interface ImageSource {
 }
 
 export type ValidOptionTypes = string | number | boolean | Filterable<any> | ExtendedString | ImageSource;
-
 export type ValidateOptions<T> = keyof T extends ValidOptionTypes ? T : never;
-
-export interface MemeElementOptions {
-    draggable: boolean;
-    resizable: boolean;
-    rotatable: boolean;
-    locked: boolean;
-}
+export type Settings<T extends Record<string, ValidOptionTypes> = Record<string, ValidOptionTypes>> = {
+    [K in keyof T]: T[K];
+};
 
 export const RESIZE_HANDLE_SIZE = 8;
 
@@ -38,7 +33,7 @@ export const enum MemeElementHandle {
     BOTTOM_RIGHT = 3,
 }
 
-abstract class MemeElement<T extends Record<string, ValidOptionTypes> = Record<string, ValidOptionTypes>> {
+abstract class MemeElement<T extends Settings = Settings> {
     public x: number = 0;
     public y: number = 0;
 
@@ -51,31 +46,19 @@ abstract class MemeElement<T extends Record<string, ValidOptionTypes> = Record<s
     private _height: number = 0;
 
     public rotation: number = 0;
+
+    public draggable: boolean = true;
+    public resizable: boolean = true;
+    public rotatable: boolean = true;
     public locked: boolean = false;
 
-    public options: MemeElementOptions = {
-        draggable: true,
-        resizable: true,
-        rotatable: true,
-        locked: false,
-    };
-
-    public settings: T;
     protected ctx: CanvasRenderingContext2D;
 
     constructor(
         public controller: MemeCanvasController,
-        settings: T,
+        public settings: T,
     ) {
         this.ctx = controller.ctx;
-
-        this.settings = new Proxy(settings, {
-            set: (target, prop, value) => {
-                target[prop as keyof T] = value;
-                this.onSettingChanged(prop as keyof T);
-                return true;
-            },
-        });
     }
 
     public created(): void {};
@@ -114,9 +97,6 @@ abstract class MemeElement<T extends Record<string, ValidOptionTypes> = Record<s
     }
 
     public resize(x: number, y: number): void {
-        // TODO: Implement aspect ratio locking
-        // const lockRatio = this.controller.holdingShift;
-
         switch (this.handle) {
             case MemeElementHandle.TOP_LEFT: {
                 const newX = Math.round(x - this.offsetX);
@@ -190,6 +170,20 @@ abstract class MemeElement<T extends Record<string, ValidOptionTypes> = Record<s
     }
 
     // Helpers
+    public getCommonProperties(): Record<string, ValidOptionTypes> {
+        return {
+            x: this.x,
+            y: this.y,
+            width: this.width,
+            height: this.height,
+            rotation: this.rotation,
+            draggable: this.draggable,
+            resizable: this.resizable,
+            rotatable: this.rotatable,
+            locked: this.locked,
+        };
+    }
+
     public handleAt(x: number, y: number): MemeElementHandle | null {
         return MemeElement.handleAt(this, x, y);
     }
