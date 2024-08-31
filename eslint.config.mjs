@@ -25,6 +25,7 @@ export default defineConfig({
             ],
             "no-restricted-syntax": ["off"],
             "no-labels": ["off"],
+            "curly": ["error", "multi-or-nest"],
         },
     },
 ]);

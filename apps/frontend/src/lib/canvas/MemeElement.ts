@@ -3,32 +3,6 @@ import MathHelper from "$lib/math";
 
 /* eslint-disable unused-imports/no-unused-vars -- Events lol */
 
-export interface Filterable<T extends readonly ValidOptionTypes[]> {
-    valid: T;
-    current: this["valid"][number];
-}
-
-export interface ExtendedString {
-    value: string;
-    multiline?: boolean;
-}
-
-export interface ImageSource {
-    src: string;
-    isFile: boolean;
-}
-
-export type ValidOptionTypes = string | number | boolean | Filterable<any> | ExtendedString | ImageSource;
-
-export type ValidateOptions<T> = keyof T extends ValidOptionTypes ? T : never;
-
-export interface MemeElementOptions {
-    draggable: boolean;
-    resizable: boolean;
-    rotatable: boolean;
-    locked: boolean;
-}
-
 export const RESIZE_HANDLE_SIZE = 8;
 
 export const enum MemeElementHandle {
@@ -38,44 +12,47 @@ export const enum MemeElementHandle {
     BOTTOM_RIGHT = 3,
 }
 
-abstract class MemeElement<T extends Record<string, ValidOptionTypes> = Record<string, ValidOptionTypes>> {
-    public x: number = 0;
+export function setting<K extends keyof MappedSettingTypes, T extends SettingType<K>>(type: K, setting: Setting<T>) {
+    return function (target: MemeElement, key: string): void {
+        console.log(target, key);
+    };
+}
+
+abstract class MemeElement<T extends Settings = any> {
+    private _settings: SettingsList<T>;
+
+    @setting("numeric", {
+        name: "X",
+        value: 0,
+    })
+    public x: number;
+
     public y: number = 0;
 
-    private offsetX: number = 0;
-    private offsetY: number = 0;
+    private _offsetX: number = 0;
+    private _offsetY: number = 0;
 
-    private handle: MemeElementHandle | null = null;
+    private _handle: MemeElementHandle | null = null;
 
     private _width: number = 0;
     private _height: number = 0;
 
     public rotation: number = 0;
+
+    public draggable: boolean = true;
+
+    public resizable: boolean = true;
+    public rotatable: boolean = true;
     public locked: boolean = false;
 
-    public options: MemeElementOptions = {
-        draggable: true,
-        resizable: true,
-        rotatable: true,
-        locked: false,
-    };
-
-    public settings: T;
     protected ctx: CanvasRenderingContext2D;
 
     constructor(
         public controller: MemeCanvasController,
-        settings: T,
+        settings: SettingsList<T>,
     ) {
         this.ctx = controller.ctx;
-
-        this.settings = new Proxy(settings, {
-            set: (target, prop, value) => {
-                target[prop as keyof T] = value;
-                this.onSettingChanged(prop as keyof T);
-                return true;
-            },
-        });
+        this._settings = settings;
     }
 
     public created(): void {};
@@ -98,29 +75,29 @@ abstract class MemeElement<T extends Record<string, ValidOptionTypes> = Record<s
 
     // Element manipulation
     public prepareDrag(x: number, y: number): void {
-        this.offsetX = Math.round(x - this.x);
-        this.offsetY = Math.round(y - this.y);
+        this._offsetX = Math.round(x - this.x);
+        this._offsetY = Math.round(y - this.y);
     }
 
     public drag(x: number, y: number): void {
-        this.x = MathHelper.clamp(Math.round(x - this.offsetX), 0, this.ctx.canvas.width - this.width);
-        this.y = MathHelper.clamp(Math.round(y - this.offsetY), 0, this.ctx.canvas.height - this.height);
+        this.x = MathHelper.clamp(Math.round(x - this._offsetX), 0, this.ctx.canvas.width - this.width);
+        this.y = MathHelper.clamp(Math.round(y - this._offsetY), 0, this.ctx.canvas.height - this.height);
     }
 
     public prepareResize(handle: MemeElementHandle | null, x: number, y: number): void {
-        this.offsetX = Math.round(x - this.x);
-        this.offsetY = Math.round(y - this.y);
-        this.handle = handle;
+        this._offsetX = Math.round(x - this.x);
+        this._offsetY = Math.round(y - this.y);
+        this._handle = handle;
     }
 
     public resize(x: number, y: number): void {
         // TODO: Implement aspect ratio locking
         // const lockRatio = this.controller.holdingShift;
 
-        switch (this.handle) {
+        switch (this._handle) {
             case MemeElementHandle.TOP_LEFT: {
-                const newX = Math.round(x - this.offsetX);
-                const newY = Math.round(y - this.offsetY);
+                const newX = Math.round(x - this._offsetX);
+                const newY = Math.round(y - this._offsetY);
 
                 const newWidth = this.x + this.width - newX;
                 const newHeight = this.y + this.height - newY;
@@ -140,7 +117,7 @@ abstract class MemeElement<T extends Record<string, ValidOptionTypes> = Record<s
 
             case MemeElementHandle.TOP_RIGHT: {
                 const newX = this.x;
-                const newY = Math.round(y - this.offsetY);
+                const newY = Math.round(y - this._offsetY);
 
                 const newWidth = x - this.x;
                 const newHeight = this.y + this.height - newY;
@@ -157,7 +134,7 @@ abstract class MemeElement<T extends Record<string, ValidOptionTypes> = Record<s
             }
 
             case MemeElementHandle.BOTTOM_LEFT: {
-                const newX = Math.round(x - this.offsetX);
+                const newX = Math.round(x - this._offsetX);
                 const newY = this.y;
 
                 const newWidth = this.x + this.width - newX;
@@ -241,6 +218,15 @@ abstract class MemeElement<T extends Record<string, ValidOptionTypes> = Record<s
 
     public set height(value: number) {
         this._height = value;
+    }
+
+    public updateSetting<K extends keyof T>(key: K, value: T[K]): void {
+        this._settings[key].value = value;
+        this.onSettingChanged(key);
+    }
+
+    public getSetting<K extends keyof T>(key: K): T[K] {
+        return this._settings[key].value;
     }
 };
 

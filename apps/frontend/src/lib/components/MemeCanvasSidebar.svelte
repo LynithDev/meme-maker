@@ -2,58 +2,22 @@
     import ElementSetting from "./ElementSetting.svelte";
     import type MemeCanvasController from "$lib/canvas/MemeCanvasController";
     import type MemeElement from "$lib/canvas/MemeElement";
-    import type { MemeElementOptions, ValidOptionTypes } from "$lib/canvas/MemeElement";
-    import { sameValues } from "$lib/helpers";
+    import type { MemeElementSettings, ValidOptionTypes } from "$lib/canvas/MemeElement";
 
     export let controller: MemeCanvasController;
 
-    let settings: MemeElementOptions;
+    let settings: MemeElementSettings;
     let mixed: string[];
 
     controller.onSelectedElementsChange = (list) => {
-        [settings, mixed] = getSimilarSettings(list);
+        getElementsSettings(list[0]!);
+    // [settings, mixed] = getSimilarSettings(list);
     };
 
-    function getSimilarSettings(elements: MemeElement[]): [MemeElementOptions, string[]] {
-        const settings: Record<string, ValidOptionTypes> = {};
-        const mixed: string[] = [];
-
-        // HELL WHAT IS THIS
-        for (const element of elements)
-            loop: for (const [key, value] of Object.entries(element.settings).concat(Object.entries(element.options)))
-                if (key in settings) {
-                    if (typeof settings[key] !== typeof value) {
-                        delete settings[key];
-                        continue loop;
-                    }
-                    else if (typeof value !== "object" && typeof value === typeof settings[key]) {
-                        if (settings[key] !== value)
-                            mixed.push(key);
-
-                        continue loop;
-                    }
-
-                    // @ts-ignore
-                    const keysA = Object.keys(settings[key]);
-                    const keysB = Object.keys(value);
-
-                    if (keysA.length !== keysB.length) {
-                        delete settings[key];
-                        continue loop;
-                    }
-
-                    // Check if the values are the same
-                    keysA.forEach((k) => {
-                        if (!sameValues((settings[key] as any)[k], (value as any)[k]))
-                            mixed.push(key);
-                    });
-                }
-                else {
-                    settings[key] = value;
-                }
-
-        return [settings as unknown as MemeElementOptions, mixed];
-    }
+    function getElementsSettings(element: MemeElement) {
+        console.log(element.settings);
+    // console.log(fields);
+    };
 
     const onChange = (key: string, newValue: ValidOptionTypes) => {
         controller.selectedElements.forEach((element) => {

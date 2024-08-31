@@ -4,6 +4,7 @@
         "./.svelte-kit/tsconfig.json"
     ],
     "compilerOptions": {
+        "experimentalDecorators": true,
         "moduleResolution": "bundler",
         "resolveJsonModule": true,
         "allowJs": true,

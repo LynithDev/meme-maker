@@ -1,6 +1,6 @@
 import MemeCanvasRenderer from "./MemeCanvasRenderer";
 import type MemeElement from "./MemeElement";
-import type { MemeElementConstructor, MemeElementHandle, MemeElementOptions, ValidOptionTypes } from "./MemeElement";
+import type { MemeElementConstructor, MemeElementHandle, ValidOptionTypes } from "./MemeElement";
 import MathHelper from "$lib/math";
 import { getRecommendedCanvasWidth } from "$lib/device";
 
@@ -209,9 +209,10 @@ class MemeCanvasController {
 
     // Utility
     public elementAt(x: number, y: number): MemeElement | null {
-        for (const element of this._elements)
+        for (const element of this._elements) {
             if (element.intersects(x, y))
                 return element;
+        }
 
         return null;
     }
@@ -219,9 +220,10 @@ class MemeCanvasController {
     public elementsInside(x: number, y: number, width: number, height: number): MemeElement[] {
         const inside: MemeElement[] = [];
 
-        for (const element of this._elements)
+        for (const element of this._elements) {
             if (element.intersectsInside(x, y, width, height))
                 inside.push(element);
+        }
 
         return inside;
     }

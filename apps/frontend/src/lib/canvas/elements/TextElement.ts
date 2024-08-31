@@ -1,18 +1,18 @@
-import MemeElement, { type ExtendedString, type Filterable, type MemeElementOptions, type ValidateOptions } from "../MemeElement";
+import MemeElement from "../MemeElement";
 import type MemeCanvasController from "../MemeCanvasController";
 import { lineBreakedText } from "$lib/canvas";
 
 export const HTextAlignment = ["left", "center", "right"] as const;
 export const VTextAlignment = ["top", "center", "bottom"] as const;
 
-export type TextElementSettings = ValidateOptions<{
-    text: ExtendedString;
-    font_family: string;
-    font_size: number;
-    color: string;
-    horizontal_align: Filterable<typeof HTextAlignment>;
-    vertical_align: Filterable<typeof VTextAlignment>;
-}>;
+export interface TextElementSettings extends Settings {
+    text: Type.Text;
+    fontFamily: Type.Text;
+    fontSize: Type.Numeric;
+    color: Type.Color;
+    horizontal_align: Type.Select<typeof HTextAlignment>;
+    vertical_align: Type.Select<typeof VTextAlignment>;
+}
 
 class TextElement extends MemeElement<TextElementSettings> {
     private _splitText: string[] = [];
@@ -20,11 +20,16 @@ class TextElement extends MemeElement<TextElementSettings> {
     constructor(controller: MemeCanvasController) {
         super(controller, {
             text: {
-                multiline: true,
-                value: "Text",
+                name: "Text",
+                default: {
+
+                },
+                value: {
+
+                },
             },
-            font_family: "sans-serif",
-            font_size: 24,
+            fontFamily: "sans-serif",
+            fontSize: 24,
             color: "black",
             horizontal_align: {
                 valid: HTextAlignment,
@@ -40,27 +45,27 @@ class TextElement extends MemeElement<TextElementSettings> {
     }
 
     private updateText() {
-        this._splitText = this.settings.text.value.split("\n");
+        // this._splitText = this.settings?.text.value.split("\n");
     }
 
     public override draw(): void {
-        this.ctx.font = this.buildFont();
-        this.ctx.fillStyle = this.settings.color;
+        // this.ctx.font = this.buildFont();
+        // this.ctx.fillStyle = this.settings;
 
-        lineBreakedText.draw(
-            this.ctx,
-            this._splitText,
-            this.x,
-            this.y,
-            {
-                alignment: this.settings.horizontal_align.current,
-                width: this.width,
-            },
-            {
-                alignment: this.settings.vertical_align.current,
-                height: this.height,
-            },
-        );
+        // lineBreakedText.draw(
+        //     this.ctx,
+        //     this._splitText,
+        //     this.x,
+        //     this.y,
+        //     {
+        //         alignment: this.settings.horizontal_align.current,
+        //         width: this.width,
+        //     },
+        //     {
+        //         alignment: this.settings.vertical_align.current,
+        //         height: this.height,
+        //     },
+        // );
     }
 
     public override onSettingChanged(key: keyof TextElementSettings): void {
