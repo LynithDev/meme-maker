@@ -189,13 +189,15 @@ class MemeCanvasController {
     public updateElement<T extends Record<string, ValidOptionTypes>, K extends keyof T>(element: MemeElement<T>, key: K, value: T[K]) {
         if (Object.prototype.hasOwnProperty.call(element.settings, key)) {
             element.settings[key] = value;
-            element.onSettingChanged(key);
+            element.onChanged(true, key);
         }
         else {
-            const keys = Object.keys(element);
+            const includes = Object.prototype.hasOwnProperty.call(element, key) || Object.prototype.hasOwnProperty.call(element, `_${key.toString()}`);
 
-            if (keys.includes(key as string))
+            if (includes) {
                 (element as any)[key] = value;
+                element.onChanged(true, key);
+            }
         }
 
         this.requestFrame();

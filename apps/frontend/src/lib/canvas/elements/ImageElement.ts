@@ -21,7 +21,7 @@ class ImageElement extends MemeElement<ImageElementSettings> {
         this.ctx.drawImage(this.image, this.x, this.y, this.width, this.height);
     }
 
-    public override onSettingChanged(key: "image"): void {
+    public override onChanged(isSetting: boolean, key: "image"): void {
         if (key === "image")
             this.image.src = this.settings.image.src;
     }

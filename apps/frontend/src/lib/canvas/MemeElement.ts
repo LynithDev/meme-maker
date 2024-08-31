@@ -77,7 +77,7 @@ abstract class MemeElement<T extends Settings = Settings> {
     public onRelease(x: number, y: number): void {}
     public onDoubleClick(x: number, y: number): void {}
     public onKeyTyped(key: string, ctrl: boolean, shift: boolean): void {}
-    public onSettingChanged(key: keyof T): void {}
+    public onChanged(isSetting: boolean, key: keyof T): void {}
 
     // Element manipulation
     public prepareDrag(x: number, y: number): void {

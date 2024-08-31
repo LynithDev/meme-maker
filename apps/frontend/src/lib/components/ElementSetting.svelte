@@ -13,7 +13,7 @@
         type="number"
         name={name}
         value={mixed ? null : value}
-        placeholder={mixed ? "mixed" : name}
+        placeholder={mixed ? "Mixed" : ""}
         on:input={(e) => {
             const num = Number.parseFloat(e.currentTarget.value);
             if (Number.isNaN(num))
@@ -27,7 +27,7 @@
         type="text"
         name={name}
         value={mixed ? null : value}
-        placeholder={mixed ? "mixed" : name}
+        placeholder={mixed ? "Mixed" : ""}
         on:input={e => onChange(e.currentTarget.value)}
     >
 {:else if typeof value === "boolean"}
@@ -46,15 +46,18 @@
         <textarea
             name={name}
             value={mixed ? null : value.value}
-            placeholder={mixed ? "mixed" : name}
+            placeholder={mixed ? "Mixed" : ""}
             on:input={e => onChange({ ...value, value: e.currentTarget.value.trim() })}
         ></textarea>
     {:else if "valid" in value}
         <select
             name={name}
-            value={mixed ? null : value.current}
+            value={mixed ? "mixed" : value.current}
             on:change={e => onChange({ ...value, current: e.currentTarget.value })}
         >
+            {#if mixed}
+                <option value="mixed" disabled>Mixed</option>
+            {/if}
             {#each value.valid as option}
                 <option value={option}>{option}</option>
             {/each}

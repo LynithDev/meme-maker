@@ -63,24 +63,25 @@ class TextElement extends MemeElement<TextElementSettings> {
         );
     }
 
-    public override onSettingChanged(key: keyof TextElementSettings): void {
-        switch (key) {
-            case "text":
-                this.updateText();
-                break;
+    public override onChanged(isSetting: boolean, key: keyof TextElementSettings): void {
+        if (isSetting)
+            switch (key) {
+                case "text":
+                    this.updateText();
+                    break;
 
-            case "font_size": {
-                const newWidth = this.getMinWidth();
-                if (this.width < newWidth)
-                    this.width = newWidth;
+                case "font_size": {
+                    const newWidth = this.getMinWidth();
+                    if (this.width < newWidth)
+                        this.width = newWidth;
 
-                const newHeight = this.getMinHeight();
-                if (this.height < newHeight)
-                    this.height = newHeight;
+                    const newHeight = this.getMinHeight();
+                    if (this.height < newHeight)
+                        this.height = newHeight;
 
-                break;
+                    break;
+                }
             }
-        }
     }
 
     public override getMinWidth(): number {
