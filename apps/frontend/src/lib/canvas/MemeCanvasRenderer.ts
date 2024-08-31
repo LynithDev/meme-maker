@@ -14,26 +14,28 @@ class MemeCanvasRenderer {
     public draw() {
         this.drawBackground();
 
-        this.ctx.save();
         this.drawElements();
-        this.ctx.restore();
-
-        this.ctx.save();
         this.drawSelectionBox();
-        this.ctx.restore();
 
         this.drawFramerate();
     }
 
     private drawElements() {
         for (const element of this.controller.elements) {
+            this.ctx.save();
             element.draw();
+            this.ctx.restore();
 
-            if (this.controller.selectedElements.includes(element)) {
+            if (!this.controller.exporting && this.controller.selectedElements.includes(element)) {
                 // Draw border around the element
-                this.drawSelectedElement(element);
+                this.ctx.save();
+                this.ctx.strokeStyle = "black";
+                this.ctx.lineWidth = 1;
+                this.ctx.setLineDash([5, 2]);
+                this.ctx.strokeRect(element.x, element.y, element.width, element.height);
+                this.ctx.restore();
 
-                if (this.controller.holdingCtrl === false && this.controller.selectedElements.length === 1) {
+                if (!element.locked && this.controller.holdingCtrl === false && this.controller.selectedElements.length === 1) {
                     // Draw resize handles around the element
                     this.ctx.fillStyle = this.controller.holdingShift ? "#50f050" : "#f05050";
                     this.ctx.fillRect(element.x, element.y, RESIZE_HANDLE_SIZE, RESIZE_HANDLE_SIZE);
@@ -43,13 +45,6 @@ class MemeCanvasRenderer {
                 }
             }
         }
-    }
-
-    private drawSelectedElement(element: MemeElement) {
-        this.ctx.strokeStyle = "black";
-        this.ctx.lineWidth = 1;
-        this.ctx.setLineDash([5, 2]);
-        this.ctx.strokeRect(element.x, element.y, element.width, element.height);
     }
 
     private drawBackground() {
@@ -63,19 +58,21 @@ class MemeCanvasRenderer {
     }
 
     private drawFramerate() {
-        this.ctx.font = "16px sans-serif";
-        const text = `${this.controller.fps.toFixed(2)} fps`;
+        if (this.controller.debug && !this.controller.exporting) {
+            this.ctx.font = "16px sans-serif";
+            const text = `${this.controller.fps.toFixed(2)} fps`;
 
-        this.ctx.strokeStyle = "black";
-        this.ctx.lineWidth = 2;
-        this.ctx.strokeText(text, 4, 16);
+            this.ctx.strokeStyle = "black";
+            this.ctx.lineWidth = 2;
+            this.ctx.strokeText(text, 4, 16);
 
-        this.ctx.fillStyle = "white";
-        this.ctx.fillText(text, 4, 16);
+            this.ctx.fillStyle = "white";
+            this.ctx.fillText(text, 4, 16);
+        }
     }
 
     private drawSelectionBox() {
-        if (this.controller.selecting !== true)
+        if (this.controller.exporting || !this.controller.selecting)
             return;
 
         const newX = Math.min(this.controller.offsetX, this.controller.mouseX);
@@ -83,6 +80,7 @@ class MemeCanvasRenderer {
         const newWidth = Math.abs(this.controller.offsetX - this.controller.mouseX);
         const newHeight = Math.abs(this.controller.offsetY - this.controller.mouseY);
 
+        this.ctx.save();
         this.ctx.strokeStyle = "#f05050C8";
         this.ctx.lineWidth = 1;
         this.ctx.setLineDash([5, 2]);
@@ -90,6 +88,7 @@ class MemeCanvasRenderer {
 
         this.ctx.fillStyle = "#f0505080";
         this.ctx.fillRect(newX, newY, newWidth, newHeight);
+        this.ctx.restore();
     }
 }
 

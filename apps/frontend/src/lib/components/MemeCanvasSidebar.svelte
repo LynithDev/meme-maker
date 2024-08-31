@@ -29,22 +29,27 @@
 
             if (element.constructor === firstElement.constructor) {
                 for (const key in elementSettings)
-                    if (!sameValues(baseSettings[key], elementSettings[key]))
+                    if (!sameValues(baseSettings.settings[key], elementSettings.settings[key]))
                         mixed.push(key);
             }
             else {
-                mixed = [];
-                break;
+                mixed = mixed.filter(key => key in baseSettings.common);
+
+                baseSettings.settings = {};
             }
+
+            for (const key in elementSettings.common)
+                if (!sameValues(baseSettings.common[key], elementSettings.common[key]))
+                    mixed.push(key);
         }
 
-        settings = baseSettings;
+        settings = { ...baseSettings.common, ...baseSettings.settings };
     };
 
-    function getElementSettings(element: MemeElement): Settings {
+    function getElementSettings(element: MemeElement) {
         return {
-            ...element.getCommonProperties(),
-            ...element.settings,
+            common: element.getCommonProperties(),
+            settings: element.settings,
         };
     }
 

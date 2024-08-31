@@ -13,6 +13,8 @@ class MemeCanvasController {
     private _fps: number = 0;
     private _lastTimeRendered: number = 0;
     private _renderer: MemeCanvasRenderer;
+    public exporting: boolean = false;
+    public debug: boolean = import.meta.env.DEV || false;
 
     // Mouse pos
     public offsetX: number = Number.NaN;
@@ -61,6 +63,26 @@ class MemeCanvasController {
 
         document.addEventListener("keyup", (e) => {
             this.holdingShift = e.shiftKey;
+        });
+    }
+
+    // Export
+    public export(type: "png" | "jpeg" | "webp") {
+        this.exporting = true;
+        this.requestFrame(() => {
+            this.canvas.toBlob((blob) => {
+                if (!blob)
+                    return;
+
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement("a");
+                a.href = url;
+                a.download = `meme.${type}`;
+                a.click();
+
+                this.exporting = false;
+                this.requestFrame();
+            }, `image/${type}`);
         });
     }
 
@@ -295,34 +317,18 @@ class MemeCanvasController {
         }
     }
 
-    // Loop
-    public startLoop() {
-        if (this.running === true)
-            return;
+    public requestFrame(cb: (() => void) | undefined = undefined) {
+        requestAnimationFrame((timestamp) => {
+            const deltaTime = timestamp - this._lastTimeRendered;
+            if (deltaTime > 0)
+                this._fps = 1000 / deltaTime;
 
-        this.running = true;
-        this.requestFrame();
-    }
+            this._renderer.draw();
 
-    private requestFrame() {
-        requestAnimationFrame(timestamp => this.renderLoop(timestamp));
-    }
+            this._lastTimeRendered = timestamp;
 
-    private renderLoop(timestamp: number) {
-        if (this.running !== true)
-            return;
-
-        const deltaTime = timestamp - this._lastTimeRendered;
-        if (deltaTime > 0)
-            this._fps = 1000 / deltaTime;
-
-        this._renderer.draw();
-
-        this._lastTimeRendered = timestamp;
-    }
-
-    public stopLoop() {
-        this.running = false;
+            cb?.();
+        });
     }
 
     // Getteres

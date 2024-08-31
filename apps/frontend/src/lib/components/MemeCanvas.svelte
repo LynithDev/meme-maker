@@ -11,7 +11,7 @@
     onMount(() => {
         controller = new MemeCanvasController(canvas);
 
-        controller.startLoop();
+        controller.requestFrame();
     });
 
     function chooseImage() {
@@ -39,17 +39,15 @@
 
 <div class="flex flex-col">
     <div class="flex flex-row">
-        <button on:click={() => controller?.startLoop()}>Start Loop</button>
-        <button on:click={() => controller?.stopLoop()}>Stop Loop</button>
-
         <button on:click={() => controller?.createElement(TextElement)}>Add Text</button>
         <button on:click={() => controller?.createElement(ImageElement)}>Add Image</button>
         <button on:click={() => chooseImage()}>Choose Image</button>
+        <button on:click={() => controller?.export("jpeg")}>Export Image</button>
     </div>
 
     <div class="flex flex-row">
         <div>
-            <canvas bind:this={canvas} width="800" height="600" class="border border-black border-dashed">
+            <canvas bind:this={canvas} width="800" height="600" class="border border-black border-solid">
                 Your browser does not support the HTML5 canvas element.
             </canvas>
         </div>

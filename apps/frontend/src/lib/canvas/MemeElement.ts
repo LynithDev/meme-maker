@@ -24,7 +24,7 @@ export type Settings<T extends Record<string, ValidOptionTypes> = Record<string,
     [K in keyof T]: T[K];
 };
 
-export const RESIZE_HANDLE_SIZE = 8;
+export const RESIZE_HANDLE_SIZE = 16;
 
 export const enum MemeElementHandle {
     TOP_LEFT = 0,
@@ -47,9 +47,6 @@ abstract class MemeElement<T extends Settings = Settings> {
 
     public rotation: number = 0;
 
-    public draggable: boolean = true;
-    public resizable: boolean = true;
-    public rotatable: boolean = true;
     public locked: boolean = false;
 
     protected ctx: CanvasRenderingContext2D;
@@ -86,6 +83,9 @@ abstract class MemeElement<T extends Settings = Settings> {
     }
 
     public drag(x: number, y: number): void {
+        if (this.locked)
+            return;
+
         this.x = MathHelper.clamp(Math.round(x - this.offsetX), 0, this.ctx.canvas.width - this.width);
         this.y = MathHelper.clamp(Math.round(y - this.offsetY), 0, this.ctx.canvas.height - this.height);
     }
@@ -96,7 +96,13 @@ abstract class MemeElement<T extends Settings = Settings> {
         this.handle = handle;
     }
 
-    public resize(x: number, y: number): void {
+    public resize(mouseX: number, mouseY: number): void {
+        if (this.locked)
+            return;
+
+        const x = Math.round(mouseX);
+        const y = Math.round(mouseY);
+
         switch (this.handle) {
             case MemeElementHandle.TOP_LEFT: {
                 const newX = Math.round(x - this.offsetX);
@@ -119,7 +125,6 @@ abstract class MemeElement<T extends Settings = Settings> {
             }
 
             case MemeElementHandle.TOP_RIGHT: {
-                const newX = this.x;
                 const newY = Math.round(y - this.offsetY);
 
                 const newWidth = x - this.x;
@@ -138,7 +143,6 @@ abstract class MemeElement<T extends Settings = Settings> {
 
             case MemeElementHandle.BOTTOM_LEFT: {
                 const newX = Math.round(x - this.offsetX);
-                const newY = this.y;
 
                 const newWidth = this.x + this.width - newX;
                 const newHeight = y - this.y;
@@ -177,9 +181,6 @@ abstract class MemeElement<T extends Settings = Settings> {
             width: this.width,
             height: this.height,
             rotation: this.rotation,
-            draggable: this.draggable,
-            resizable: this.resizable,
-            rotatable: this.rotatable,
             locked: this.locked,
         };
     }
