@@ -38,3 +38,7 @@ h3 {
 h4 {
     @apply font-semibold md:text-xl text-lg;
 }
+
+a {
+    @apply text-accent underline;
+}

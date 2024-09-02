@@ -5,8 +5,6 @@
     import FilePicker from "../base/FilePicker.svelte";
     import Modal from "$lib/components/overlay/Modal.svelte";
     import app from "$lib/app";
-    import ImageElement from "$lib/canvas/elements/ImageElement";
-    import TextElement from "$lib/canvas/elements/TextElement";
 
     const image = writable<HTMLImageElement | null>(null);
     let filePicker: FilePicker;
@@ -108,8 +106,6 @@
 
 <div class="flex flex-row justify-between gap-x-2">
     <div class="flex flex-row gap-x-2">
-        <Button variant="inverted" on:click={() => controller.createElement(TextElement)}>Add Text</Button>
-        <Button variant="inverted" on:click={() => controller.createElement(ImageElement)}>Add Image</Button>
         <Button variant="inverted" on:click={openModal}>Choose Image</Button>
     </div>
 

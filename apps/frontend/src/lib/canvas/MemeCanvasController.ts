@@ -5,6 +5,8 @@ import registerCallbacks from "./registerCallbacks";
 import MathHelper from "$lib/utils/math";
 import { getRecommendedCanvasWidth } from "$lib/utils/device";
 
+export type Events = "selectedElementsChange" | "elementsUpdated" | "elementsListChanged";
+
 class MemeCanvasController {
     // Canvas & DOM
     private _canvas: HTMLCanvasElement | null = null;
@@ -37,8 +39,12 @@ class MemeCanvasController {
     public holdingShift: boolean = false;
     public holdingCtrl: boolean = false;
 
-    public onSelectedElementsChange: () => void = () => {};
-    public onElementsUpdated: () => void = () => {};
+    // Events
+    private _events: Record<Events, (() => void)[]> = {
+        elementsUpdated: [],
+        selectedElementsChange: [],
+        elementsListChanged: [],
+    };
 
     public init(canvas: HTMLCanvasElement) {
         const ctx = canvas.getContext("2d", { alpha: false });
@@ -53,6 +59,15 @@ class MemeCanvasController {
         this.requestFrame();
 
         return unregister;
+    }
+
+    // Events
+    public listen<K extends Events>(event: K, cb: () => void) {
+        this._events[event].push(cb);
+    }
+
+    public emit<K extends Events>(event: K) {
+        this._events[event].forEach(cb => cb());
     }
 
     // Export
@@ -97,13 +112,12 @@ class MemeCanvasController {
                 if (this.selectedElements.includes(foundElement)) {
                     const index = this.selectedElements.indexOf(foundElement);
                     this.selectedElements.splice(index, 1);
-                    this.onSelectedElementsChange();
                 }
                 else {
                     this.selectedElements.push(foundElement);
-                    this.onSelectedElementsChange();
                 }
 
+                this.emit("selectedElementsChange");
                 return;
             }
 
@@ -117,7 +131,7 @@ class MemeCanvasController {
             }
 
             this.selectedElements = [foundElement];
-            this.onSelectedElementsChange();
+            this.emit("selectedElementsChange");
             this.startDrag(foundElement, x, y);
             foundElement.onPress(x, y);
             return;
@@ -128,7 +142,7 @@ class MemeCanvasController {
 
     public onRelease(x: number, y: number) {
         if (this.dragging || this.resizing)
-            this.onElementsUpdated();
+            this.emit("elementsUpdated");
 
         this.dragging = false;
         this.resizing = false;
@@ -142,9 +156,11 @@ class MemeCanvasController {
     }
 
     public onDrag(x: number, y: number) {
+        if (this.selectedElements.length === 1)
+            this.resizeElement(this.selectedElements[0]!, x, y);
+
         this.selectedElements.forEach((e) => {
             this.dragElement(e, x, y);
-            this.resizeElement(e, x, y);
         });
     }
 
@@ -219,7 +235,7 @@ class MemeCanvasController {
         const newHeight = Math.abs(height);
 
         this.selectedElements = this.elementsInside(newX, newY, newWidth, newHeight);
-        this.onSelectedElementsChange();
+        this.emit("selectedElementsChange");
     }
 
     // Utility
@@ -259,8 +275,10 @@ class MemeCanvasController {
         instance.y = Math.round((this.canvas.height / 2) - (instance.height / 2));
 
         this._elements.push(instance);
+        this.emit("elementsListChanged");
+
         this.selectedElements = [instance];
-        this.onSelectedElementsChange();
+        this.emit("selectedElementsChange");
     }
 
     public changeImage(image: HTMLImageElement) {
@@ -271,28 +289,17 @@ class MemeCanvasController {
 
     public resize(width: number, height: number) {
         if (width === height) {
-            this.canvas.width = MathHelper.clamp(width, 50, getRecommendedCanvasWidth());
-            this.canvas.height = MathHelper.clamp(height, 50, getRecommendedCanvasWidth());
+            this.canvas.width = getRecommendedCanvasWidth();
+            this.canvas.height = getRecommendedCanvasWidth();
         }
-        else if (width > height) {
-            if (width > getRecommendedCanvasWidth()) {
-                this.canvas.width = getRecommendedCanvasWidth();
-                this.canvas.height = Math.round(height * (getRecommendedCanvasWidth() / width));
-            }
-            else {
-                this.canvas.width = width;
-                this.canvas.height = height;
-            }
-        }
-        else if (height > width) {
-            if (height > getRecommendedCanvasWidth()) {
-                this.canvas.height = getRecommendedCanvasWidth();
-                this.canvas.width = Math.round(width * (getRecommendedCanvasWidth() / height));
-            }
-            else {
-                this.canvas.width = width;
-                this.canvas.height = height;
-            }
+        else {
+            const aspectRatio = width / height;
+            const canvasWidth = getRecommendedCanvasWidth();
+
+            this.canvas.width = canvasWidth;
+
+            const newHeight = Math.round(canvasWidth / aspectRatio);
+            this.canvas.height = newHeight;
         }
     }
 

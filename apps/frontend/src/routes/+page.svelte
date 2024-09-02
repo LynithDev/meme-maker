@@ -3,32 +3,40 @@
     import MemeCanvas from "$lib/components/domain/MemeCanvas.svelte";
     import MemeCanvasToolbar from "$lib/components/domain/MemeCanvasToolbar.svelte";
     import MemeContext from "$lib/components/domain/MemeContext.svelte";
-    import MemeCanvasSidebar from "$lib/components/domain/MemeCanvasSidebar.svelte";
+    import MemeCanvasOptions from "$lib/components/domain/MemeCanvasOptions.svelte";
+    import { getRecommendedCanvasWidth } from "$lib/utils/device";
+    import MemeCanvasElements from "$lib/components/domain/MemeCanvasElements.svelte";
 
     let canvas: MemeCanvas;
     let context: MemeContext;
+    const canvasWidth = getRecommendedCanvasWidth();
 
     onMount(() => {
         context.init(canvas.getCanvas());
     });
 </script>
 
-<section class="min-h-screen flex flex-col items-center justify-center">
+<section class="h-[30vh] flex flex-col items-center justify-center">
+    <h1>Meme Maker</h1>
+    <p>By <a href="https://lynith.dev/">Lynith</a></p>
+</section>
+
+<section class="flex flex-col items-center justify-start py-8">
+
     <MemeContext bind:this={context}>
 
-        <div class="flex flex-col gap-y-2">
-            <div class="grid grid-cols-[240px_800px_240px]">
+        <div class="min-h-149 flex flex-col gap-y-2" style="--canvas-width: {canvasWidth}px;">
+            <div class="grid grid-cols-[240px_var(--canvas-width)_240px]">
                 <div></div>
                 <MemeCanvasToolbar />
                 <div></div>
             </div>
 
-            <div class="grid grid-cols-[240px_800px_240px]">
-                <div></div>
+            <div class="grid grid-cols-[240px_var(--canvas-width)_240px] min-h-149">
+                <MemeCanvasElements />
                 <MemeCanvas bind:this={canvas} />
-                <MemeCanvasSidebar />
+                <MemeCanvasOptions />
             </div>
-
         </div>
 
     </MemeContext>

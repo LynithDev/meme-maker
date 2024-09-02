@@ -9,14 +9,15 @@
     const controller = app.controller.get();
 
     onMount(() => {
-        controller.onSelectedElementsChange = () => updated(controller.selectedElements);
-        controller.onElementsUpdated = () => updated(controller.selectedElements);
+        controller.listen("elementsUpdated", updated);
+        controller.listen("selectedElementsChange", updated);
     });
 
     let settings: Settings | null = null;
     let mixed: string[] = [];
 
-    function updated(list: MemeElement[]) {
+    function updated() {
+        const list = controller.selectedElements;
         settings = null;
         mixed = [];
 
@@ -63,7 +64,7 @@
     };
 </script>
 
-<div class="flex flex-col gap-y-2 p-2">
+<div class="flex flex-col gap-y-2 px-2">
 
     {#if settings}
         {#each Object.entries(settings) as [key, value]}
