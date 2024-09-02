@@ -1,5 +1,24 @@
-<script>
+<script lang="ts">
+    import { onMount } from "svelte";
+    import MemeCanvas from "$lib/components/domain/MemeCanvas.svelte";
+    import MemeCanvasToolbar from "$lib/components/domain/MemeCanvasToolbar.svelte";
+    import MemeContext from "$lib/components/domain/MemeContext.svelte";
+
+    let canvas: MemeCanvas;
+    let context: MemeContext;
+
+    onMount(() => {
+        context.init(canvas.getCanvas());
+    });
 </script>
 
-<h1>Welcome to SvelteKit</h1>
-<p>Visit <a href="https://kit.svelte.dev">kit.svelte.dev</a> to read the documentation</p>
+<section class="min-h-screen flex flex-col items-center justify-center">
+    <MemeContext bind:this={context}>
+
+        <div class="flex flex-col gap-y-2">
+            <MemeCanvasToolbar />
+            <MemeCanvas bind:this={canvas} />
+        </div>
+
+    </MemeContext>
+</section>

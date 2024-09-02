@@ -1,4 +1,4 @@
-import type { HTextAlignment, VTextAlignment } from "./canvas/elements/TextElement";
+import type { HTextAlignment, VTextAlignment } from "../canvas/elements/TextElement";
 
 export function drawLineBreakedText(
     ctx: CanvasRenderingContext2D,

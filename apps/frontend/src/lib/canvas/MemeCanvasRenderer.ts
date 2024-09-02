@@ -82,12 +82,14 @@ class MemeCanvasRenderer {
 
         this.ctx.save();
         this.ctx.strokeStyle = "#f05050C8";
+        this.ctx.fillStyle = "#f0505080";
         this.ctx.lineWidth = 1;
         this.ctx.setLineDash([5, 2]);
-        this.ctx.strokeRect(newX, newY, newWidth, newHeight);
+        this.ctx.beginPath();
+        this.ctx.roundRect(newX, newY, newWidth, newHeight, 5);
+        this.ctx.stroke();
+        this.ctx.fill();
 
-        this.ctx.fillStyle = "#f0505080";
-        this.ctx.fillRect(newX, newY, newWidth, newHeight);
         this.ctx.restore();
     }
 }

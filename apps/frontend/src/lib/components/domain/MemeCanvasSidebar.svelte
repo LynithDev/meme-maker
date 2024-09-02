@@ -1,17 +1,20 @@
 <script lang="ts">
-    import ElementSetting from "./ElementSetting.svelte";
-    import type MemeCanvasController from "$lib/canvas/MemeCanvasController";
+    import { onMount } from "svelte";
+    import ElementSetting from "../ElementSetting.svelte";
+    import app from "$lib/app";
     import type MemeElement from "$lib/canvas/MemeElement";
     import type { Settings, ValidOptionTypes } from "$lib/canvas/MemeElement";
-    import { sameValues } from "$lib/helpers";
+    import { sameValues } from "$lib/utils/helpers";
 
-    export let controller: MemeCanvasController;
+    const controller = app.controller.get();
+
+    onMount(() => {
+        controller.onSelectedElementsChange = () => updated(controller.selectedElements);
+        controller.onElementsUpdated = () => updated(controller.selectedElements);
+    });
 
     let settings: Settings | null = null;
     let mixed: string[] = [];
-
-    controller.onSelectedElementsChange = () => updated(controller.selectedElements);
-    controller.onElementsUpdated = () => updated(controller.selectedElements);
 
     function updated(list: MemeElement[]) {
         if (list.length === 0) {
@@ -60,7 +63,7 @@
     };
 </script>
 
-<div class="flex flex-col gap-y-2">
+<div class="flex flex-col gap-y-2 p-2">
 
     {#if settings}
         {#each Object.entries(settings) as [key, value]}
@@ -71,6 +74,8 @@
                 onChange={newValue => onChange(key, newValue)}
             />
         {/each}
+    {:else}
+        <p class="text-sm text-gray-500">Select an element to edit its properties</p>
     {/if}
 
 </div>

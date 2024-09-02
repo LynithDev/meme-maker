@@ -18,7 +18,7 @@ export default defineConfig({
                 "error",
                 {
                     vars: "all",
-                    varsIgnorePattern: "^_",
+                    varsIgnorePattern: "(^_)|(^.*Props)",
                     args: "after-used",
                     argsIgnorePattern: "(^_)|(^e$)|(^event$)",
                 },

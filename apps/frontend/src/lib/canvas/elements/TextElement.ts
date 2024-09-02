@@ -1,6 +1,6 @@
 import MemeElement, { type ExtendedString, type Filterable, type ValidateOptions } from "../MemeElement";
 import type MemeCanvasController from "../MemeCanvasController";
-import { lineBreakedText } from "$lib/canvas";
+import { lineBreakedText } from "$lib/utils/canvas";
 
 export const HTextAlignment = ["left", "center", "right"] as const;
 export const VTextAlignment = ["top", "center", "bottom"] as const;

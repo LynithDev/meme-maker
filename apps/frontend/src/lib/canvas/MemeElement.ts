@@ -1,5 +1,5 @@
 import type MemeCanvasController from "./MemeCanvasController";
-import MathHelper from "$lib/math";
+import MathHelper from "$lib/utils/math";
 
 /* eslint-disable unused-imports/no-unused-vars -- Events lol */
 
@@ -24,7 +24,7 @@ export type Settings<T extends Record<string, ValidOptionTypes> = Record<string,
     [K in keyof T]: T[K];
 };
 
-export const RESIZE_HANDLE_SIZE = 16;
+export const RESIZE_HANDLE_SIZE = 12;
 
 export const enum MemeElementHandle {
     TOP_LEFT = 0,

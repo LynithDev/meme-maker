@@ -1,20 +1,26 @@
 import MemeCanvasRenderer from "./MemeCanvasRenderer";
 import type MemeElement from "./MemeElement";
 import type { MemeElementConstructor, MemeElementHandle, ValidOptionTypes } from "./MemeElement";
-import MathHelper from "$lib/math";
-import { getRecommendedCanvasWidth } from "$lib/device";
+import registerCallbacks from "./registerCallbacks";
+import MathHelper from "$lib/utils/math";
+import { getRecommendedCanvasWidth } from "$lib/utils/device";
 
 class MemeCanvasController {
-    private _ctx: CanvasRenderingContext2D;
+    // Canvas & DOM
+    private _canvas: HTMLCanvasElement | null = null;
+    private _ctx: CanvasRenderingContext2D | null = null;
     private _image: HTMLImageElement | null = null;
-    private _elements: MemeElement[] = [];
 
-    // Renderer related variables
+    // Renderer
     private _fps: number = 0;
     private _lastTimeRendered: number = 0;
-    private _renderer: MemeCanvasRenderer;
+    private _renderer: MemeCanvasRenderer | null = null;
     public exporting: boolean = false;
-    public debug: boolean = import.meta.env.DEV || false;
+    public debug: boolean = location.search.includes("dbg");
+
+    // Elements
+    public selectedElements: MemeElement[] = [];
+    private _elements: MemeElement[] = [];
 
     // Mouse pos
     public offsetX: number = Number.NaN;
@@ -22,48 +28,31 @@ class MemeCanvasController {
     public mouseX: number = Number.NaN;
     public mouseY: number = Number.NaN;
 
-    public selectedElements: MemeElement[] = [];
-    public running: boolean = false;
-
+    // User action state
     public dragging: boolean = false;
     public selecting: boolean = false;
     public resizing: boolean = false;
 
+    // Keyboard state
     public holdingShift: boolean = false;
     public holdingCtrl: boolean = false;
 
     public onSelectedElementsChange: () => void = () => {};
     public onElementsUpdated: () => void = () => {};
 
-    constructor(
-        private canvas: HTMLCanvasElement,
-    ) {
+    public init(canvas: HTMLCanvasElement) {
         const ctx = canvas.getContext("2d", { alpha: false });
         if (!ctx)
             throw new Error("Canvas context not found");
 
+        this._canvas = canvas;
         this._ctx = ctx;
         this._renderer = new MemeCanvasRenderer(this);
 
-        this.canvas.addEventListener("dblclick", e => this.mouseEvent(e, this.onDoubleClick));
-        this.canvas.addEventListener("mousedown", e => this.mouseEvent(e, this.onPress));
-        document.addEventListener("mouseup", e => this.mouseEvent(e, this.onRelease));
+        const unregister = registerCallbacks(this);
+        this.requestFrame();
 
-        document.addEventListener("mousemove", e => this.mouseEvent(e, (x, y) => {
-            this.mouseX = x;
-            this.mouseY = y;
-
-            if (this.dragging === true || this.resizing === true)
-                this.onDrag(x, y);
-        }));
-
-        document.addEventListener("keydown", (e) => {
-            this.holdingShift = e.shiftKey;
-        });
-
-        document.addEventListener("keyup", (e) => {
-            this.holdingShift = e.shiftKey;
-        });
+        return unregister;
     }
 
     // Export
@@ -87,20 +76,7 @@ class MemeCanvasController {
     }
 
     // Listeners
-    private mouseEvent(event: MouseEvent, fn: (x: number, y: number) => void) {
-        if (event.button !== 0)
-            return;
-
-        this.requestFrame();
-
-        const rect = this.canvas.getBoundingClientRect();
-        const x = MathHelper.clamp(event.clientX - rect.left, 0, this.canvas.width);
-        const y = MathHelper.clamp(event.clientY - rect.top, 0, this.canvas.height);
-
-        fn.call(this, x, y);
-    }
-
-    private onPress(x: number, y: number) {
+    public onPress(x: number, y: number) {
         this.offsetX = x;
         this.offsetY = y;
 
@@ -150,7 +126,7 @@ class MemeCanvasController {
         this.startSelectionBox(x, y);
     }
 
-    private onRelease(x: number, y: number) {
+    public onRelease(x: number, y: number) {
         if (this.dragging || this.resizing)
             this.onElementsUpdated();
 
@@ -165,14 +141,14 @@ class MemeCanvasController {
         this.selectedElements.forEach(e => e.onRelease(x, y));
     }
 
-    private onDrag(x: number, y: number) {
+    public onDrag(x: number, y: number) {
         this.selectedElements.forEach((e) => {
             this.dragElement(e, x, y);
             this.resizeElement(e, x, y);
         });
     }
 
-    private onDoubleClick(x: number, y: number) {
+    public onDoubleClick(x: number, y: number) {
         this.selectedElements.forEach(e => e.onDoubleClick(x, y));
     }
 
@@ -287,6 +263,7 @@ class MemeCanvasController {
 
     public changeImage(image: HTMLImageElement) {
         this._image = image;
+        this.clear();
         this.resize(image.width, image.height);
     }
 
@@ -323,7 +300,7 @@ class MemeCanvasController {
             if (deltaTime > 0)
                 this._fps = 1000 / deltaTime;
 
-            this._renderer.draw();
+            this._renderer?.draw();
 
             this._lastTimeRendered = timestamp;
 
@@ -332,8 +309,15 @@ class MemeCanvasController {
     }
 
     // Getteres
+    public get canvas(): HTMLCanvasElement {
+        if (!this._canvas)
+            throw new Error("Canvas not found");
+
+        return this._canvas;
+    }
+
     public get ctx() {
-        return this._ctx;
+        return this._ctx!;
     }
 
     public get image() {
