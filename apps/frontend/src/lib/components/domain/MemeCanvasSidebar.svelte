@@ -1,6 +1,6 @@
 <script lang="ts">
     import { onMount } from "svelte";
-    import ElementSetting from "../ElementSetting.svelte";
+    import ElementSetting from "./ElementSetting.svelte";
     import app from "$lib/app";
     import type MemeElement from "$lib/canvas/MemeElement";
     import type { Settings, ValidOptionTypes } from "$lib/canvas/MemeElement";
@@ -17,11 +17,11 @@
     let mixed: string[] = [];
 
     function updated(list: MemeElement[]) {
-        if (list.length === 0) {
-            settings = null;
-            mixed = [];
+        settings = null;
+        mixed = [];
+
+        if (list.length === 0)
             return;
-        }
 
         const firstElement = list[0]!;
         const baseSettings = getElementSettings(firstElement);
@@ -75,7 +75,7 @@
             />
         {/each}
     {:else}
-        <p class="text-sm text-gray-500">Select an element to edit its properties</p>
+        <p class="text-center text-sm text-fg">Select an element to edit its properties</p>
     {/if}
 
 </div>

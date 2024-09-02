@@ -259,6 +259,8 @@ class MemeCanvasController {
         instance.y = Math.round((this.canvas.height / 2) - (instance.height / 2));
 
         this._elements.push(instance);
+        this.selectedElements = [instance];
+        this.onSelectedElementsChange();
     }
 
     public changeImage(image: HTMLImageElement) {

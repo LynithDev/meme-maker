@@ -21,7 +21,7 @@
 <svelte:window on:click={clickOutside} />
 
 {#if $open}
-    <div bind:this={element} class="fixed left-0 top-0 z-1000 h-screen w-screen animate-fade-in animate-duration-150 animate-ease-in-out bg-black/70">
+    <div bind:this={element} class="bg-pure-black/60 fixed left-0 top-0 z-1000 h-screen w-screen animate-fade-in animate-duration-150 animate-ease-in-out backdrop-blur-md">
         <slot />
     </div>
 {/if}

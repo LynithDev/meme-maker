@@ -86,12 +86,12 @@ class TextElement extends MemeElement<TextElementSettings> {
 
     public override getMinWidth(): number {
         this.ctx.font = this.buildFont();
-        return lineBreakedText.getWidth(this.ctx, this._splitText);
+        return Math.round(lineBreakedText.getWidth(this.ctx, this._splitText));
     }
 
     public override getMinHeight(): number {
         this.ctx.font = this.buildFont();
-        return this._splitText.length * lineBreakedText.getHeight(this.ctx);
+        return Math.round(this._splitText.length * lineBreakedText.getHeight(this.ctx));
     }
 
     public buildFont(): string {

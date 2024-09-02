@@ -23,6 +23,10 @@ export default defineConfig<Theme>({
             black: "#302B2B",
             white: "#FFF2F2",
 
+            pure: {
+                black: "#000000",
+            },
+
             danger: "#ff0000",
         },
         borderRadius: {

@@ -1,4 +1,6 @@
 <script lang="ts">
+    import TextInput from "../base/TextInput.svelte";
+    import Conditional from "../base/Conditional.svelte";
     import type { ValidOptionTypes } from "$lib/canvas/MemeElement";
 
     export let name: string;
@@ -9,46 +11,39 @@
 </script>
 
 {#if typeof value === "number"}
-    <input
-        type="number"
+    <TextInput
         name={name}
         value={mixed ? null : value}
         placeholder={mixed ? "Mixed" : ""}
-        on:input={(e) => {
-            const num = Number.parseFloat(e.currentTarget.value);
-            if (Number.isNaN(num))
-                return;
-
-            onChange(num);
-        }}
-    >
+        validate={value => value.match(/^\d+$/) !== null}
+        on:validatedInput={e => onChange(Number.parseFloat(e.detail.currentTarget.value))}
+    />
 {:else if typeof value === "string"}
-    <input
-        type="text"
+    <TextInput
         name={name}
         value={mixed ? null : value}
         placeholder={mixed ? "Mixed" : ""}
-        on:input={e => onChange(e.currentTarget.value)}
-    >
+        on:validatedInput={e => onChange(e.detail.currentTarget.value)}
+    />
 {:else if typeof value === "boolean"}
-    <label for={name}>
-        <input
-            type="checkbox"
-            name={name}
-            id={name}
-            checked={value}
-            on:change={e => onChange(e.currentTarget.checked)}
-        >
+    <Conditional
+        type="toggle"
+        name={name}
+        id={name}
+        checked={value}
+        on:change={e => onChange(e.detail.value)}
+    >
         {name}
-    </label>
+    </Conditional>
 {:else if typeof value === "object"}
     {#if "multiline" in value}
-        <textarea
+        <TextInput
             name={name}
             value={mixed ? null : value.value}
             placeholder={mixed ? "Mixed" : ""}
-            on:input={e => onChange({ ...value, value: e.currentTarget.value.trim() })}
-        ></textarea>
+            multiline
+            on:input={e => onChange({ ...value, value: e.detail.currentTarget.value.trim() })}
+        />
     {:else if "valid" in value}
         <select
             name={name}
