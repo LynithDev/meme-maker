@@ -8,9 +8,6 @@ on:
 
 jobs:
   build_site:
-    defaults:
-      run:
-        working-directory: apps/frontend/
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -20,7 +17,7 @@ jobs:
       - name: Install pnpm
         uses: pnpm/action-setup@v3
         with:
-          version: 8
+          version: 9
 
       - name: Install Node.js
         uses: actions/setup-node@v4
@@ -35,20 +32,17 @@ jobs:
         env:
           BASE_PATH: '/${{ github.event.repository.name }}'
         run: |
-          pnpm run build
+          pnpm frontend run build
 
       - name: Upload Artifacts
         uses: actions/upload-pages-artifact@v3
         with:
           # this should match the `pages` option in your adapter-static options
-          path: 'build/'
+          path: 'apps/frontend/build/'
 
   deploy:
     needs: build_site
     runs-on: ubuntu-latest
-    defaults:
-      run:
-        working-directory: apps/frontend/
 
     permissions:
       pages: write

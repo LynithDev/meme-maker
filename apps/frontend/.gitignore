@@ -2,3 +2,4 @@
 .output
 .vercel
 .svelte-kit
+build/
