@@ -20,7 +20,7 @@ class TextElement extends MemeElement<TextElementSettings> {
     constructor(controller: MemeCanvasController) {
         const rect = controller.canvas.getBoundingClientRect();
         const canvasRatio = controller.canvas.width / rect.width;
-        const fontSize = 32 * canvasRatio;
+        const fontSize = Math.round(32 * canvasRatio);
 
         super(controller, {
             text: {

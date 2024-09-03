@@ -30,7 +30,7 @@
 
     <MemeContext bind:this={context}>
 
-        <div class="min-h-149 flex flex-col gap-y-2">
+        <div class="h-149 max-h-149 min-h-149 flex flex-col gap-y-2">
             <div class="grid grid-cols-[240px_auto_240px]">
                 <div></div>
                 <MemeCanvasToolbar />
@@ -38,7 +38,7 @@
             </div>
 
             <div
-                class="grid grid-cols-[240px_auto_240px] min-h-149"
+                class="grid grid-cols-[240px_auto_240px] h-full min-h-full [&>*]:(max-h-full overflow-auto)"
                 class:opacity-50={usable !== true}
                 class:pointer-events-none={usable !== true}
             >

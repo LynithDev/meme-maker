@@ -67,14 +67,16 @@
 <div class="flex flex-col gap-y-2 px-2">
 
     {#if settings}
-        {#each Object.entries(settings) as [key, value]}
-            <ElementSetting
-                name={key}
-                value={value}
-                mixed={mixed.includes(key)}
-                onChange={newValue => onChange(key, newValue)}
-            />
-        {/each}
+        <div class="grid grid-cols-2 gap-2 [&>*:not(:nth-child(-n+6))]:col-span-2">
+            {#each Object.entries(settings) as [key, value]}
+                <ElementSetting
+                    name={key}
+                    value={value}
+                    mixed={mixed.includes(key)}
+                    onChange={newValue => onChange(key, newValue)}
+                />
+            {/each}
+        </div>
     {:else}
         <p class="text-center text-sm text-fg">Select an element to edit its properties</p>
     {/if}

@@ -30,6 +30,13 @@ export default defineConfig<Theme>({
 
             danger: "#ff0000",
         },
+        fontSize: {
+            xs: "12px",
+            sm: "14px",
+            md: "16px",
+            lg: "20px",
+            xl: "24px",
+        },
         borderRadius: {
             none: "0",
             sm: "4px",
