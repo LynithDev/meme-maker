@@ -49,14 +49,14 @@ abstract class MemeElement<T extends Settings = Settings> {
 
     public locked: boolean = false;
 
-    protected ctx: CanvasRenderingContext2D;
+    protected get ctx(): CanvasRenderingContext2D {
+        return this.controller.renderer.ctx;
+    }
 
     constructor(
         public controller: MemeCanvasController,
         public settings: T,
-    ) {
-        this.ctx = controller.ctx;
-    }
+    ) {}
 
     public created(): void {};
     public draw(): void {};

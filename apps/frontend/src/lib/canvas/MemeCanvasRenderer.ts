@@ -3,13 +3,10 @@ import type MemeElement from "./MemeElement";
 import { RESIZE_HANDLE_SIZE } from "./MemeElement";
 
 class MemeCanvasRenderer {
-    private ctx: CanvasRenderingContext2D;
-
     constructor(
-        private controller: MemeCanvasController,
-    ) {
-        this.ctx = controller.ctx;
-    }
+        public controller: MemeCanvasController,
+        public ctx: CanvasRenderingContext2D,
+    ) {}
 
     public draw() {
         this.drawBackground();

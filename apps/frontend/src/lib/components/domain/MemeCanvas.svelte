@@ -1,6 +1,4 @@
 <script lang="ts">
-    import { getRecommendedCanvasWidth } from "$lib/utils/device";
-
     let canvas: HTMLCanvasElement;
 
     export function getCanvas() {
@@ -9,9 +7,9 @@
 </script>
 
 <canvas
-    class="border border-fg/30 rounded-md border-solid"
-    width={getRecommendedCanvasWidth()}
-    height={getRecommendedCanvasWidth()}
+    class="max-w-[500px] border border-fg/30 rounded-md border-solid"
+    width={500}
+    height={500}
     on:contextmenu={e => e.preventDefault()}
     bind:this={canvas}
 >

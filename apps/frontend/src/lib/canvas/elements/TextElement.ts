@@ -18,13 +18,17 @@ class TextElement extends MemeElement<TextElementSettings> {
     private _splitText: string[] = [];
 
     constructor(controller: MemeCanvasController) {
+        const rect = controller.canvas.getBoundingClientRect();
+        const canvasRatio = controller.canvas.width / rect.width;
+        const fontSize = 32 * canvasRatio;
+
         super(controller, {
             text: {
                 multiline: true,
                 value: "Text",
             },
             font_family: "sans-serif",
-            font_size: 24,
+            font_size: fontSize,
             color: "black",
             horizontal_align: {
                 valid: HTextAlignment,

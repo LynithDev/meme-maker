@@ -3,14 +3,12 @@ import type MemeElement from "./MemeElement";
 import type { MemeElementConstructor, MemeElementHandle, ValidOptionTypes } from "./MemeElement";
 import registerCallbacks from "./registerCallbacks";
 import MathHelper from "$lib/utils/math";
-import { getRecommendedCanvasWidth } from "$lib/utils/device";
 
 export type Events = "selectedElementsChange" | "elementsUpdated" | "elementsListChanged" | "imageChange";
 
 class MemeCanvasController {
     // Canvas & DOM
     private _canvas: HTMLCanvasElement | null = null;
-    private _ctx: CanvasRenderingContext2D | null = null;
     private _image: HTMLImageElement | null = null;
 
     // Renderer
@@ -53,8 +51,7 @@ class MemeCanvasController {
             throw new Error("Canvas context not found");
 
         this._canvas = canvas;
-        this._ctx = ctx;
-        this._renderer = new MemeCanvasRenderer(this);
+        this._renderer = new MemeCanvasRenderer(this, ctx);
 
         const unregister = registerCallbacks(this);
         this.requestFrame();
@@ -76,14 +73,13 @@ class MemeCanvasController {
         this.exporting = true;
         this.requestFrame(() => {
             this.canvas.toBlob((blob) => {
-                if (!blob)
-                    return;
-
-                const url = URL.createObjectURL(blob);
-                const a = document.createElement("a");
-                a.href = url;
-                a.download = `meme.${type}`;
-                a.click();
+                if (blob) {
+                    const url = URL.createObjectURL(blob);
+                    const a = document.createElement("a");
+                    a.href = url;
+                    a.download = `meme.${type}`;
+                    a.click();
+                }
 
                 this.exporting = false;
                 this.requestFrame();
@@ -294,18 +290,21 @@ class MemeCanvasController {
 
     public resize(width: number, height: number) {
         if (width === height) {
-            this.canvas.width = getRecommendedCanvasWidth();
-            this.canvas.height = getRecommendedCanvasWidth();
+            this.canvas.width = width;
+            this.canvas.height = height;
         }
         else {
             const aspectRatio = width / height;
-            const canvasWidth = getRecommendedCanvasWidth();
+            const canvasWidth = width;
 
             this.canvas.width = canvasWidth;
 
             const newHeight = Math.round(canvasWidth / aspectRatio);
             this.canvas.height = newHeight;
         }
+
+        const scaled = MathHelper.clamp(this.canvas.width * 1.5, 300, 500);
+        this.canvas.style.width = `${scaled}px`;
     }
 
     public requestFrame(cb: (() => void) | undefined = undefined) {
@@ -330,16 +329,12 @@ class MemeCanvasController {
         return this._canvas;
     }
 
-    public get ctx() {
-        return this._ctx!;
-    }
-
     public get image() {
         return this._image;
     }
 
     public get renderer() {
-        return this._renderer;
+        return this._renderer!;
     }
 
     public get fps() {

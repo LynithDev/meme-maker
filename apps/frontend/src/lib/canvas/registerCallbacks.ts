@@ -10,8 +10,12 @@ export default function registerCallbacks(controller: MemeCanvasController): Unr
         controller.requestFrame();
 
         const rect = controller.canvas.getBoundingClientRect();
-        const x = MathHelper.clamp(event.clientX - rect.left, 0, controller.canvas.width);
-        const y = MathHelper.clamp(event.clientY - rect.top, 0, controller.canvas.height);
+        const mouseX = event.clientX - rect.left;
+        const mouseY = event.clientY - rect.top;
+
+        const scale = controller.canvas.width / rect.width;
+        const x = MathHelper.clamp(Math.round(mouseX * scale), 0, controller.canvas.width);
+        const y = MathHelper.clamp(Math.round(mouseY * scale), 0, controller.canvas.height);
 
         fn.call(controller, x, y);
     }

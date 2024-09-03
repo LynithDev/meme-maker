@@ -4,13 +4,11 @@
     import MemeCanvasToolbar from "$lib/components/domain/MemeCanvasToolbar.svelte";
     import MemeContext from "$lib/components/domain/MemeContext.svelte";
     import MemeCanvasOptions from "$lib/components/domain/MemeCanvasOptions.svelte";
-    import { getRecommendedCanvasWidth } from "$lib/utils/device";
     import MemeCanvasElements from "$lib/components/domain/MemeCanvasElements.svelte";
 
     let canvas: MemeCanvas;
     let context: MemeContext;
     let usable: boolean = false;
-    const canvasWidth = getRecommendedCanvasWidth();
 
     onMount(() => {
         const unregister = context.init(canvas.getCanvas(), (controller) => {
@@ -32,15 +30,15 @@
 
     <MemeContext bind:this={context}>
 
-        <div class="min-h-149 flex flex-col gap-y-2" style="--canvas-width: {canvasWidth}px;">
-            <div class="grid grid-cols-[240px_var(--canvas-width)_240px]">
+        <div class="min-h-149 flex flex-col gap-y-2">
+            <div class="grid grid-cols-[240px_auto_240px]">
                 <div></div>
                 <MemeCanvasToolbar />
                 <div></div>
             </div>
 
             <div
-                class="grid grid-cols-[240px_var(--canvas-width)_240px] min-h-149"
+                class="grid grid-cols-[240px_auto_240px] min-h-149"
                 class:opacity-50={usable !== true}
                 class:pointer-events-none={usable !== true}
             >

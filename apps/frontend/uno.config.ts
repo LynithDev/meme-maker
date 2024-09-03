@@ -25,6 +25,7 @@ export default defineConfig<Theme>({
 
             pure: {
                 black: "#000000",
+                white: "#FFFFFF",
             },
 
             danger: "#ff0000",
