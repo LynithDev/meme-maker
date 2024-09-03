@@ -16,7 +16,7 @@ export interface ExtendedString {
 
 export interface ImageSource {
     src: string;
-    isFile: boolean;
+    name: string;
 }
 
 export type ValidOptionTypes = string | number | boolean | Filterable<any> | ExtendedString | ImageSource;
@@ -63,11 +63,11 @@ abstract class MemeElement<T extends Settings = Settings> {
     public draw(): void {};
 
     public getMinWidth(): number {
-        return 20;
+        return scaled(this.ctx.canvas, 20);
     }
 
     public getMinHeight(): number {
-        return 20;
+        return scaled(this.ctx.canvas, 20);
     }
 
     // Events

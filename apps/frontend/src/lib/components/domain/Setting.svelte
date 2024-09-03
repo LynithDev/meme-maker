@@ -3,10 +3,15 @@
     import Conditional from "../base/Conditional.svelte";
     import ElementLabel from "./SettingLabel.svelte";
     import type { ValidOptionTypes } from "$lib/canvas/MemeElement";
+  import ImageChooser from "../base/ImageChooser.svelte";
+  import Button from "../base/Button.svelte";
+  import { writable } from "svelte/store";
 
     export let name: string;
     export let value: ValidOptionTypes;
     export let mixed: boolean = false;
+
+    let open = writable(false);
 
     export let onChange: (value: ValidOptionTypes) => void;
 </script>
@@ -65,22 +70,14 @@
                 {/each}
             </select>
         {:else if "src" in value}
-            <input
-                type="file"
-                name={name}
-                accept="image/*"
-                on:change={(e) => {
-                    const file = (e.currentTarget).files?.[0];
-                    if (!file)
-                        return;
-
-                    const reader = new FileReader();
-                    reader.onload = (e) => {
-                        onChange({ ...value, src: e.target?.result?.toString() || "" });
-                    };
-                    reader.readAsDataURL(file);
+            <Button variant="inverted" on:click={() => open.set(true)}>Choose Image</Button>
+            <ImageChooser
+                {open}
+                on:confirm={(e) => {
+                    const imageSrc = e.detail.src;
+                    onChange({ ...value, src: imageSrc || "" });
                 }}
-            >
+            />
         {/if}
     {/if}
 </div>
