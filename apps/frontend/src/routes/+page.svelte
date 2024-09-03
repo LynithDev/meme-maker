@@ -5,12 +5,15 @@
     import MemeContext from "$lib/components/domain/MemeContext.svelte";
     import MemeCanvasOptions from "$lib/components/domain/MemeCanvasOptions.svelte";
     import MemeCanvasElements from "$lib/components/domain/MemeCanvasElements.svelte";
+    import { initSourcedFonts } from "$lib/utils/fonts";
 
     let canvas: MemeCanvas;
     let context: MemeContext;
     let usable: boolean = false;
 
     onMount(() => {
+        initSourcedFonts();
+
         const unregister = context.init(canvas.getCanvas(), (controller) => {
             controller.listen("imageChange", () => {
                 usable = controller.image !== null;

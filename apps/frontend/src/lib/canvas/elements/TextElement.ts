@@ -10,6 +10,8 @@ export type TextElementSettings = ValidateOptions<{
     font_family: string;
     font_size: number;
     color: string;
+    stroke: string;
+    stroke_width: number;
     horizontal_align: Filterable<typeof HTextAlignment>;
     vertical_align: Filterable<typeof VTextAlignment>;
 }>;
@@ -27,7 +29,9 @@ class TextElement extends MemeElement<TextElementSettings> {
             },
             font_family: "sans-serif",
             font_size: fontSize,
-            color: "black",
+            color: "white",
+            stroke: "black",
+            stroke_width: scaled(controller.canvas, 3),
             horizontal_align: {
                 valid: HTextAlignment,
                 current: "center",
@@ -47,7 +51,9 @@ class TextElement extends MemeElement<TextElementSettings> {
 
     public override draw(): void {
         this.ctx.font = this.buildFont();
-        this.ctx.fillStyle = this.settings.color;
+        this.ctx.fillStyle = this.settings.color.replaceAll("none", "transparent");
+        this.ctx.strokeStyle = this.settings.stroke.replaceAll("none", "transparent");
+        this.ctx.lineWidth = this.settings.stroke_width;
 
         lineBreakedText.draw(
             this.ctx,

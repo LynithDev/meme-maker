@@ -37,6 +37,9 @@ export function drawLineBreakedText(
             else if (vAlign.alignment === "bottom")
                 lineY += vAlign.height - (text.length * getLineBreakedTextHeight(ctx));
 
+        if (ctx.strokeStyle !== "transparent" && ctx.lineWidth > 0)
+            ctx.strokeText(line, lineX, lineY);
+
         ctx.fillText(line, lineX, lineY);
 
         if (hAlign)
