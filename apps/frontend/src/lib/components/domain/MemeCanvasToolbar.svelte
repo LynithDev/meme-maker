@@ -14,7 +14,7 @@
 
 <div class="flex flex-row justify-between gap-x-2">
     <div class="flex flex-row gap-x-2">
-        <Button variant="inverted" on:click={() => open.set(true)}>Choose Image</Button>
+        <Button variant="inverted" on:click={e => open.set(true)}>Choose Image</Button>
     </div>
 
     <div class="flex flex-row">

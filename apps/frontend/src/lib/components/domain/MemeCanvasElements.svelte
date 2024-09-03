@@ -91,5 +91,7 @@
         variant="danger"
         on:click={() => controller.removeElements($selectedElements)}
         disabled={$selectedElements.length === 0}
-    >Delete</Button>
+    >
+        Delete
+    </Button>
 </div>

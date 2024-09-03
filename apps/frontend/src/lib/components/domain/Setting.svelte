@@ -3,9 +3,10 @@
     import Conditional from "../base/Conditional.svelte";
     import ElementLabel from "./SettingLabel.svelte";
     import type { ValidOptionTypes } from "$lib/canvas/MemeElement";
-  import ImageChooser from "../base/ImageChooser.svelte";
-  import Button from "../base/Button.svelte";
-  import { writable } from "svelte/store";
+    import ImageChooser from "../base/ImageChooser.svelte";
+    import Button from "../base/Button.svelte";
+    import { writable } from "svelte/store";
+    import Select from "../base/Select.svelte";
 
     export let name: string;
     export let value: ValidOptionTypes;
@@ -57,10 +58,13 @@
             />
         {:else if "valid" in value}
             <ElementLabel {name} />
-            <select
+            <Select
                 name={name}
                 value={mixed ? "mixed" : value.current}
-                on:change={e => onChange({ ...value, current: e.currentTarget.value })}
+                on:change={e => {
+                    // @ts-expect-error
+                    onChange({ ...value, current: e.currentTarget.value })
+                }}
             >
                 {#if mixed}
                     <option value="mixed" disabled>Mixed</option>
@@ -68,7 +72,7 @@
                 {#each value.valid as option}
                     <option value={option}>{option}</option>
                 {/each}
-            </select>
+            </Select>
         {:else if "src" in value}
             <Button variant="inverted" on:click={() => open.set(true)}>Choose Image</Button>
             <ImageChooser
