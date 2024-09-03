@@ -1,6 +1,6 @@
 <script lang="ts">
     import { onMount } from "svelte";
-    import ElementSetting from "./ElementSetting.svelte";
+    import ElementSetting from "./Setting.svelte";
     import app from "$lib/app";
     import type MemeElement from "$lib/canvas/MemeElement";
     import type { Settings, ValidOptionTypes } from "$lib/canvas/MemeElement";

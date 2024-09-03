@@ -1,7 +1,7 @@
 <script lang="ts">
     import TextInput from "../base/TextInput.svelte";
     import Conditional from "../base/Conditional.svelte";
-    import ElementLabel from "./ElementLabel.svelte";
+    import ElementLabel from "./SettingLabel.svelte";
     import type { ValidOptionTypes } from "$lib/canvas/MemeElement";
 
     export let name: string;

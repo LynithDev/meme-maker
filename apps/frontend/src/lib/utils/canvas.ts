@@ -78,3 +78,12 @@ export const lineBreakedText = {
     getHeight: getLineBreakedTextHeight,
     getWidth: getLineBreakedTextWidth,
 };
+
+export function scaled(
+    canvas: HTMLCanvasElement,
+    value: number,
+) {
+    const rect = canvas.getBoundingClientRect();
+    const canvasRatio = canvas.width / rect.width;
+    return Math.round(value * canvasRatio);
+}

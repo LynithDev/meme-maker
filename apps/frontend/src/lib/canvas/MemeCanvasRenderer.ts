@@ -1,6 +1,7 @@
 import type MemeCanvasController from "./MemeCanvasController";
 import type MemeElement from "./MemeElement";
-import { RESIZE_HANDLE_SIZE } from "./MemeElement";
+import { getHandleSize } from "./MemeElement";
+import { scaled } from "$lib/utils/canvas";
 
 class MemeCanvasRenderer {
     constructor(
@@ -34,11 +35,13 @@ class MemeCanvasRenderer {
 
                 if (!element.locked && this.controller.holdingCtrl === false && this.controller.selectedElements.length === 1) {
                     // Draw resize handles around the element
+                    const size = getHandleSize(this.ctx.canvas);
+
                     this.ctx.fillStyle = this.controller.holdingShift ? "#50f050" : "#f05050";
-                    this.ctx.fillRect(element.x, element.y, RESIZE_HANDLE_SIZE, RESIZE_HANDLE_SIZE);
-                    this.ctx.fillRect(element.x + element.width - RESIZE_HANDLE_SIZE, element.y, RESIZE_HANDLE_SIZE, RESIZE_HANDLE_SIZE);
-                    this.ctx.fillRect(element.x, element.y + element.height - RESIZE_HANDLE_SIZE, RESIZE_HANDLE_SIZE, RESIZE_HANDLE_SIZE);
-                    this.ctx.fillRect(element.x + element.width - RESIZE_HANDLE_SIZE, element.y + element.height - RESIZE_HANDLE_SIZE, RESIZE_HANDLE_SIZE, RESIZE_HANDLE_SIZE);
+                    this.ctx.fillRect(element.x, element.y, size, size);
+                    this.ctx.fillRect(element.x + element.width - size, element.y, size, size);
+                    this.ctx.fillRect(element.x, element.y + element.height - size, size, size);
+                    this.ctx.fillRect(element.x + element.width - size, element.y + element.height - size, size, size);
                 }
             }
         }

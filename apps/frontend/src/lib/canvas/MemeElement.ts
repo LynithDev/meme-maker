@@ -1,5 +1,6 @@
 import type MemeCanvasController from "./MemeCanvasController";
 import MathHelper from "$lib/utils/math";
+import { scaled } from "$lib/utils/canvas";
 
 /* eslint-disable unused-imports/no-unused-vars -- Events lol */
 
@@ -24,7 +25,7 @@ export type Settings<T extends Record<string, ValidOptionTypes> = Record<string,
     [K in keyof T]: T[K];
 };
 
-export const RESIZE_HANDLE_SIZE = 12;
+export const getHandleSize = (canvas: HTMLCanvasElement) => scaled(canvas, 12);
 
 export const enum MemeElementHandle {
     TOP_LEFT = 0,
@@ -198,16 +199,18 @@ abstract class MemeElement<T extends Settings = Settings> {
     }
 
     public static handleAt(element: MemeElement, x: number, y: number): MemeElementHandle | null {
-        if (x >= element.x && x <= element.x + RESIZE_HANDLE_SIZE && y >= element.y && y <= element.y + RESIZE_HANDLE_SIZE)
+        const size = getHandleSize(element.ctx.canvas);
+
+        if (x >= element.x && x <= element.x + size && y >= element.y && y <= element.y + size)
             return MemeElementHandle.TOP_LEFT;
 
-        else if (x >= element.x + element.width - RESIZE_HANDLE_SIZE && x <= element.x + element.width && y >= element.y && y <= element.y + RESIZE_HANDLE_SIZE)
+        else if (x >= element.x + element.width - size && x <= element.x + element.width && y >= element.y && y <= element.y + size)
             return MemeElementHandle.TOP_RIGHT;
 
-        else if (x >= element.x && x <= element.x + RESIZE_HANDLE_SIZE && y >= element.y + element.height - RESIZE_HANDLE_SIZE && y <= element.y + element.height)
+        else if (x >= element.x && x <= element.x + size && y >= element.y + element.height - size && y <= element.y + element.height)
             return MemeElementHandle.BOTTOM_LEFT;
 
-        else if (x >= element.x + element.width - RESIZE_HANDLE_SIZE && x <= element.x + element.width && y >= element.y + element.height - RESIZE_HANDLE_SIZE && y <= element.y + element.height)
+        else if (x >= element.x + element.width - size && x <= element.x + element.width && y >= element.y + element.height - size && y <= element.y + element.height)
             return MemeElementHandle.BOTTOM_RIGHT;
 
         return null;

@@ -255,6 +255,8 @@ class MemeCanvasController {
     }
 
     public clear() {
+        this.selectedElements = [];
+        this.emit("selectedElementsChange");
         this._elements = [];
         this.emit("elementsListChanged");
     }
