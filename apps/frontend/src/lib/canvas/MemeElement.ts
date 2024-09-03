@@ -16,7 +16,6 @@ export interface ExtendedString {
 
 export interface ImageSource {
     src: string;
-    name: string;
 }
 
 export type ValidOptionTypes = string | number | boolean | Filterable<any> | ExtendedString | ImageSource;

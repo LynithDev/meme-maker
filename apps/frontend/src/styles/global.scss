@@ -11,6 +11,10 @@ body {
     @apply bg-primary text-fg;
 }
 
+* {
+    box-sizing:border-box;
+}
+
 *:focus-visible {
     @apply outline-accent outline-2 outline outline-offset-2;
 }
@@ -41,4 +45,13 @@ h4 {
 
 a {
     @apply text-accent underline;
+}
+
+/** Scrollbar **/
+::-webkit-scrollbar {
+    @apply w-1.5;
+}
+
+::-webkit-scrollbar-thumb {
+    @apply bg-fg/10 hover:bg-fg/40 active:bg-fg/60 rounded-full;
 }

@@ -16,7 +16,6 @@ class ImageElement extends MemeElement<ImageElementSettings> {
         super(controller, {
             image: {
                 src: `data:image/svg+xml;base64,${missingIconSvg}`,
-                name: "Missing Image",
             },
         });
         this.image = new Image();

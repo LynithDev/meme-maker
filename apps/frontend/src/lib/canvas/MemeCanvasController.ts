@@ -269,6 +269,20 @@ class MemeCanvasController {
         }
     }
 
+    public removeElements(elements: MemeElement[]) {
+        let deleted: boolean = false;
+        elements.forEach((e) => {
+            const index = this._elements.indexOf(e);
+            if (index > -1) {
+                this._elements.splice(index, 1);
+                deleted = true;
+            }
+        });
+
+        if (deleted)
+            this.emit("elementsListChanged");
+    }
+
     public createElement(Element: MemeElementConstructor) {
         const instance = new Element(this);
 

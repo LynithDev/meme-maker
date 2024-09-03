@@ -30,11 +30,15 @@
             @apply bg-secondary text-fg;
         }
 
+        &.danger {
+            @apply bg-danger/10 text-danger hover:(bg-danger/50 text-white);
+        }
+
         & {
-            @apply ring-focus relative leading-5 flex flex-row justify-center items-center text-center py-sm px-md rounded-lg font-medium;
+            @apply transition! ring-focus relative leading-5 flex flex-row justify-center items-center text-center py-sm px-md rounded-lg font-medium;
             @apply focus:(z-1 ring-2 ring-accent);
-            @apply hover:(transition-opacity opacity-80 text-opacity-40 disabled:opacity-50 disabled:cursor-default);
-            @apply disabled:opacity-50;
+            @apply hover:(opacity-80 text-opacity-40);
+            @apply disabled:(opacity-50 pointer-events-none cursor-default);
         }
 
     }
