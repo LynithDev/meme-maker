@@ -9,19 +9,26 @@
 
     let canvas: MemeCanvas;
     let context: MemeContext;
+    let usable: boolean = false;
     const canvasWidth = getRecommendedCanvasWidth();
 
     onMount(() => {
-        context.init(canvas.getCanvas());
+        const unregister = context.init(canvas.getCanvas(), (controller) => {
+            controller.listen("imageChange", () => {
+                usable = controller.image !== null;
+            });
+        });
+
+        return unregister;
     });
 </script>
 
-<section class="h-[30vh] flex flex-col items-center justify-center">
+<section class="h-[20vh] flex flex-col items-center justify-center">
     <h1>Meme Maker</h1>
     <p>By <a href="https://lynith.dev/">Lynith</a></p>
 </section>
 
-<section class="flex flex-col items-center justify-start py-8">
+<section class="flex flex-col select-none items-center justify-start pb-8">
 
     <MemeContext bind:this={context}>
 
@@ -32,7 +39,11 @@
                 <div></div>
             </div>
 
-            <div class="grid grid-cols-[240px_var(--canvas-width)_240px] min-h-149">
+            <div
+                class="grid grid-cols-[240px_var(--canvas-width)_240px] min-h-149"
+                class:opacity-50={usable !== true}
+                class:pointer-events-none={usable !== true}
+            >
                 <MemeCanvasElements />
                 <MemeCanvas bind:this={canvas} />
                 <MemeCanvasOptions />

@@ -8,6 +8,12 @@
     }
 </script>
 
-<canvas bind:this={canvas} width={getRecommendedCanvasWidth()} height={getRecommendedCanvasWidth()} class="border border-fg/30 rounded-md border-solid">
+<canvas
+    class="border border-fg/30 rounded-md border-solid"
+    width={getRecommendedCanvasWidth()}
+    height={getRecommendedCanvasWidth()}
+    on:contextmenu={e => e.preventDefault()}
+    bind:this={canvas}
+>
     Your browser does not support the HTML5 canvas element.
 </canvas>

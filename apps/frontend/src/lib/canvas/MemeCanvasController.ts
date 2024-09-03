@@ -5,7 +5,7 @@ import registerCallbacks from "./registerCallbacks";
 import MathHelper from "$lib/utils/math";
 import { getRecommendedCanvasWidth } from "$lib/utils/device";
 
-export type Events = "selectedElementsChange" | "elementsUpdated" | "elementsListChanged";
+export type Events = "selectedElementsChange" | "elementsUpdated" | "elementsListChanged" | "imageChange";
 
 class MemeCanvasController {
     // Canvas & DOM
@@ -44,6 +44,7 @@ class MemeCanvasController {
         elementsUpdated: [],
         selectedElementsChange: [],
         elementsListChanged: [],
+        imageChange: [],
     };
 
     public init(canvas: HTMLCanvasElement) {
@@ -259,12 +260,15 @@ class MemeCanvasController {
 
     public clear() {
         this._elements = [];
+        this.emit("elementsListChanged");
     }
 
     public removeElement(element: MemeElement) {
         const index = this._elements.indexOf(element);
-        if (index > -1)
+        if (index > -1) {
             this._elements.splice(index, 1);
+            this.emit("elementsListChanged");
+        }
     }
 
     public createElement(Element: MemeElementConstructor) {
@@ -285,6 +289,7 @@ class MemeCanvasController {
         this._image = image;
         this.clear();
         this.resize(image.width, image.height);
+        this.emit("imageChange");
     }
 
     public resize(width: number, height: number) {

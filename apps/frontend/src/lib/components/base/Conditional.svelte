@@ -45,7 +45,7 @@
 
         &::before {
             content: "";
-            @apply absolute -left-px top-1/2 -translate-y-1/2 w-4 h-4 bg-white rounded-md transition;
+            @apply border border-accent absolute -left-px top-1/2 -translate-y-1/2 w-4 h-4 bg-white rounded-md transition;
             @apply transform translate-x-0;
         }
 

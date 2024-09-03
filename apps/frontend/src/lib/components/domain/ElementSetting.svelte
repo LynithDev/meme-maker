@@ -30,7 +30,7 @@
         type="toggle"
         name={name}
         id={name}
-        checked={value}
+        value={value}
         on:change={e => onChange(e.detail.value)}
     >
         {name}
