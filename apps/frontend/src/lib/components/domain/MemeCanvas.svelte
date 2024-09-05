@@ -7,7 +7,7 @@
 </script>
 
 <canvas
-    class="max-w-[500px] border border-fg/30 rounded-md border-solid"
+    class="max-w-full w-full border border-fg/30 rounded-md border-solid md:max-w-[500px]"
     width={500}
     height={500}
     on:contextmenu={e => e.preventDefault()}

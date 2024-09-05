@@ -2,8 +2,9 @@
     import { createEventDispatcher } from "svelte";
     import type { HTMLInputAttributes } from "svelte/elements";
     import { writable } from "svelte/store";
+    import { randomString } from "$lib/utils/helpers";
 
-    export let name: string = crypto.randomUUID();
+    export let name: string = randomString();
     const chosenFileNames = writable<string | null>(null);
 
     interface $$Props extends HTMLInputAttributes {

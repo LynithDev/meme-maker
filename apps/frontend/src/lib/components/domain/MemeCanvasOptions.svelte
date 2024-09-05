@@ -73,10 +73,10 @@
     };
 </script>
 
-<div class="flex flex-col gap-y-2 px-2">
+<div bind:this={container} class="flex flex-col gap-y-2 md:px-2">
 
-    <div bind:this={container} class="grid grid-cols-2 gap-x-2 gap-y-4 [&>*:not(:nth-child(-n+6))]:col-span-2">
-        {#if settings}
+    {#if settings}
+        <div class="grid grid-cols-2 my-2 gap-x-2 gap-y-4 [&>*:not(:nth-child(-n+6))]:col-span-2 md:my-0">
             {#each Object.entries(settings) as [key, value]}
                 <ElementSetting
                     name={key}
@@ -85,7 +85,7 @@
                     onChange={newValue => onChange(key, newValue)}
                 />
             {/each}
-        {/if}
-    </div>
+        </div>
+    {/if}
 
 </div>

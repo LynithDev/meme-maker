@@ -107,9 +107,22 @@
     <h3 slot="title">Choose Image</h3>
     <p slot="paragraph">Choose an image (accepted PNG, JPG, JPEG, WEBP) from your computer or by pasting the image from your clipboard. You can also provide a link to an image.</p>
 
-    <FilePicker bind:this={filePicker} class="w-full" accept="image/*" on:change={handleFileEvent} />
+    <FilePicker
+        bind:this={filePicker}
+        on:change={handleFileEvent}
+        class="w-full"
+        accept="image/*"
+    />
+
     <p>or</p>
-    <TextInput bind:this={urlInput} class="w-full" on:input={e => handleInputEvent(e.detail)} placeholder="https://example.com/image.png" />
+
+    <TextInput
+        bind:this={urlInput}
+        on:input={e => handleInputEvent(e.detail)}
+        name="url-input"
+        class="w-full"
+        placeholder="https://example.com/image.png"
+    />
 
     {#if $image}
         <div class="divider-x" />

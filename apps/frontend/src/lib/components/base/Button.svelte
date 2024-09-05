@@ -10,14 +10,19 @@
     interface $$Props extends HTMLButtonAttributes {
         variant?: ButtonVariant;
         size?: ButtonSize;
+        smallIconOnly?: boolean;
     }
 
 </script>
 
 <button
     on:click {...$$restProps}
-    class={`${variant} ${size}`}>
-    <slot />
+    class={`${variant} ${size}`}
+>
+    <slot name="icon" />
+    <span>
+        <slot />
+    </span>
 </button>
 
 <style lang="scss">
@@ -35,11 +40,14 @@
         }
 
         & {
-            @apply transition! ring-focus relative leading-5 flex flex-row justify-center items-center text-center py-sm px-md rounded-lg font-medium;
+            @apply transition! ring-focus relative leading-5 flex flex-row justify-center items-center gap-x-1 text-center py-sm px-md rounded-lg font-medium;
             @apply focus:(z-1 ring-2 ring-accent);
             @apply hover:(opacity-80 text-opacity-40);
             @apply disabled:(opacity-50 pointer-events-none cursor-default);
         }
+    }
 
+    :global(svg) + span {
+        @apply md:block hidden;
     }
 </style>

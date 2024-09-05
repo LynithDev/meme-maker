@@ -1,4 +1,5 @@
 import { getContext, setContext } from "svelte";
+import { randomString } from "$lib/utils/helpers";
 
 export interface Context<T> {
     get: () => T;
@@ -6,7 +7,7 @@ export interface Context<T> {
 }
 
 function randomContextName() {
-    return `$$context_${crypto.randomUUID()}`;
+    return `$$context_${randomString()}`;
 }
 
 export function createContext<T>(key: any = randomContextName()): Context<T> {

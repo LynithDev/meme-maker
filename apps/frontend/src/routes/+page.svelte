@@ -29,23 +29,23 @@
     <p>By <a href="https://lynith.dev/">Lynith</a></p>
 </section>
 
-<section class="flex flex-col select-none items-center justify-start pb-8">
+<section class="h-full flex flex-col select-none items-center justify-start p-4 pt-0 md:(p-0 pb-8)">
 
     <MemeContext bind:this={context}>
 
-        <div class="h-149 max-h-149 min-h-149 flex flex-col gap-y-2">
-            <div class="grid grid-cols-[240px_auto_240px]">
+        <div class="flex flex-col gap-y-2 md:(h-149 max-h-149 min-h-149)">
+            <div class="flex flex-col md:grid md:grid-cols-[240px_auto_240px]">
                 <div></div>
                 <MemeCanvasToolbar />
                 <div></div>
             </div>
 
             <div
-                class="grid grid-cols-[240px_auto_240px] h-full min-h-full [&>*]:(max-h-full overflow-auto)"
+                class="h-full min-h-full flex flex-col gap-y-2 md:(grid grid-cols-[240px_auto_240px]) md:[&>*]:(max-h-full overflow-auto)"
                 class:opacity-50={usable !== true}
                 class:pointer-events-none={usable !== true}
             >
-                <MemeCanvasElements />
+                <MemeCanvasElements class="order-last md:order-none" />
                 <MemeCanvas bind:this={canvas} />
                 <MemeCanvasOptions />
             </div>

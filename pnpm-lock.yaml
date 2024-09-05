@@ -64,6 +64,9 @@ importers:
       svelte-check:
         specifier: ^3.6.0
         version: 3.8.6(@babel/core@7.25.2)(postcss-load-config@3.1.4(postcss@8.4.41))(postcss@8.4.41)(svelte@4.2.19)
+      svelte-untitled-ui-icons:
+        specifier: ^1.0.4
+        version: 1.0.4(svelte@4.2.19)(typescript@5.5.4)
       unocss:
         specifier: ^0.62.3
         version: 0.62.3(postcss@8.4.41)(rollup@4.21.1)(vite@5.4.2(@types/node@22.5.0)(sass-embedded@1.77.8))
@@ -2396,6 +2399,12 @@ packages:
         optional: true
       typescript:
         optional: true
+
+  svelte-untitled-ui-icons@1.0.4:
+    resolution: {integrity: sha512-C/I8IkzB49PyMbX/R+/ish7ofbg2ZKfcoRqisbwmZDLx5iWtuDSD7lkKQH18o5XwCTnw+VQW+IbWQrS3Kxz+9w==}
+    peerDependencies:
+      svelte: ^4.0.0
+      typescript: ^5.0.0
 
   svelte@4.2.19:
     resolution: {integrity: sha512-IY1rnGr6izd10B0A8LqsBfmlT5OILVuZ7XsI0vdGPEvuonFV7NYEUK4dAkm9Zg2q0Um92kYjTpS1CAP3Nh/KWw==}
@@ -4977,6 +4986,11 @@ snapshots:
       '@babel/core': 7.25.2
       postcss: 8.4.41
       postcss-load-config: 3.1.4(postcss@8.4.41)
+      typescript: 5.5.4
+
+  svelte-untitled-ui-icons@1.0.4(svelte@4.2.19)(typescript@5.5.4):
+    dependencies:
+      svelte: 4.2.19
       typescript: 5.5.4
 
   svelte@4.2.19:

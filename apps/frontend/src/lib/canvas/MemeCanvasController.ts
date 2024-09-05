@@ -24,9 +24,9 @@ class MemeCanvasController {
     // Canvas
     public padding = {
         top: 0,
-        right: 0,
-        bottom: 0,
         left: 0,
+        bottom: 0,
+        right: 0,
     };
 
     // Renderer
@@ -275,9 +275,13 @@ class MemeCanvasController {
         return inside;
     }
 
-    public clear() {
+    public clearSelected() {
         this.selectedElements = [];
         this.emit("selectedElementsChange");
+    }
+
+    public clear() {
+        this.clearSelected();
         this._elements = [];
         this.emit("elementsListChanged");
     }
@@ -291,6 +295,8 @@ class MemeCanvasController {
     }
 
     public removeElements(elements: MemeElement[]) {
+        this.clearSelected();
+
         let deleted: boolean = false;
         elements.forEach((e) => {
             const index = this._elements.indexOf(e);
@@ -322,9 +328,9 @@ class MemeCanvasController {
         this._image = image;
         this.padding = {
             top: 0,
-            right: 0,
-            bottom: 0,
             left: 0,
+            bottom: 0,
+            right: 0,
         };
 
         this.clear();
