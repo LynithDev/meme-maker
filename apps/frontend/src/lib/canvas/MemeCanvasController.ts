@@ -17,9 +17,17 @@ export interface EventCallbacks {
 export type Events = keyof EventCallbacks;
 
 class MemeCanvasController {
-    // Canvas & DOM
-    private _canvas: HTMLCanvasElement | null = null;
+    // DOM
     private _image: HTMLImageElement | null = null;
+    private _canvas: HTMLCanvasElement | null = null;
+
+    // Canvas
+    public padding = {
+        top: 0,
+        right: 0,
+        bottom: 0,
+        left: 0,
+    };
 
     // Renderer
     private _fps: number = 0;
@@ -312,9 +320,25 @@ class MemeCanvasController {
 
     public changeImage(image: HTMLImageElement) {
         this._image = image;
+        this.padding = {
+            top: 0,
+            right: 0,
+            bottom: 0,
+            left: 0,
+        };
+
         this.clear();
         this.resize(image.width, image.height);
         this.emit("imageChange");
+    }
+
+    public changePadding(padding: typeof this.padding) {
+        const newWidth = (this.image?.width || this.canvas.width) + padding.left + padding.right;
+        const newHeight = (this.image?.height || this.canvas.height) + padding.top + padding.bottom;
+
+        this.padding = padding;
+
+        this.resize(newWidth, newHeight);
     }
 
     public resize(width: number, height: number) {
@@ -334,6 +358,7 @@ class MemeCanvasController {
 
         const scaled = MathHelper.clamp(this.canvas.width * 1.5, 300, 500);
         this.canvas.style.width = `${scaled}px`;
+        this.requestFrame();
     }
 
     public requestFrame(cb: (() => void) | undefined = undefined) {

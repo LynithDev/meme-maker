@@ -1,30 +1,30 @@
 <script lang="ts">
+    import { writable } from "svelte/store";
     import TextInput from "../base/TextInput.svelte";
     import Conditional from "../base/Conditional.svelte";
-    import ElementLabel from "./SettingLabel.svelte";
-    import type { ValidOptionTypes } from "$lib/canvas/MemeElement";
     import ImageChooser from "../base/ImageChooser.svelte";
     import Button from "../base/Button.svelte";
-    import { writable } from "svelte/store";
     import Select from "../base/Select.svelte";
+    import ElementLabel from "./SettingLabel.svelte";
+    import type { ValidOptionTypes } from "$lib/canvas/MemeElement";
 
     export let name: string;
     export let value: ValidOptionTypes;
     export let mixed: boolean = false;
 
-    let open = writable(false);
+    const open = writable(false);
 
     export let onChange: (value: ValidOptionTypes) => void;
 </script>
 
-<div class="grid grid-rows-[theme(fontSize.xs),auto] grid-cols-1 gap-y-1">
+<div class="grid grid-cols-1 gap-y-1 grid-rows-[theme(fontSize.xs),auto]">
     {#if typeof value === "number"}
         <ElementLabel {name} />
         <TextInput
             name={name}
             value={mixed ? null : value}
             placeholder={mixed ? "Mixed" : ""}
-            validate={value => value.match(/^\d+$/) !== null}
+            validate="float"
             on:validatedInput={e => onChange(Number.parseFloat(e.detail.currentTarget.value))}
         />
     {:else if typeof value === "string"}
@@ -33,7 +33,7 @@
             name={name}
             value={mixed ? null : value}
             placeholder={mixed ? "Mixed" : ""}
-            on:validatedInput={e => onChange(e.detail.currentTarget.value)}
+            on:input={e => onChange(e.detail.currentTarget.value)}
         />
     {:else if typeof value === "boolean"}
         <span></span>
@@ -61,9 +61,9 @@
             <Select
                 name={name}
                 value={mixed ? "mixed" : value.current}
-                on:change={e => {
+                on:change={(e) => {
                     // @ts-expect-error
-                    onChange({ ...value, current: e.currentTarget.value })
+                    onChange({ ...value, current: e.currentTarget.value });
                 }}
             >
                 {#if mixed}

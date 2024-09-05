@@ -54,7 +54,13 @@ class MemeCanvasRenderer {
         this.ctx.fillRect(0, 0, this.ctx.canvas.width, this.ctx.canvas.height);
 
         if (image !== null)
-            this.ctx.drawImage(image, 0, 0, this.ctx.canvas.width, this.ctx.canvas.height);
+            this.ctx.drawImage(
+                image,
+                this.controller.padding.left,
+                this.controller.padding.top,
+                this.ctx.canvas.width - this.controller.padding.right - this.controller.padding.left,
+                this.ctx.canvas.height - this.controller.padding.bottom - this.controller.padding.top,
+            );
     }
 
     private drawFramerate() {

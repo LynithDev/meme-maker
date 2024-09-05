@@ -23,6 +23,7 @@ export default defineConfig({
                     argsIgnorePattern: "(^_)|(^e$)|(^event$)",
                 },
             ],
+            "no-undef-init": ["off"],
             "no-restricted-syntax": ["off"],
             "no-labels": ["off"],
         },
