@@ -8,6 +8,8 @@
 
     const imageChooserOpened = writable(false);
     const canvasModalOpened = writable(false);
+    const exportModalOpened = writable(false);
+
     const controller = app.controller.get();
 
     function proceed(image: HTMLImageElement) {
@@ -28,6 +30,11 @@
     function paddingKeys() {
         return Object.keys(controller.padding) as PaddingKey[];
     }
+
+    function exportImage(type: "webp" | "jpeg" | "png") {
+        controller.export(type);
+        exportModalOpened.set(false);
+    }
 </script>
 
 <div class="flex flex-row justify-between gap-x-2">
@@ -45,7 +52,7 @@
     </div>
 
     <div class="flex flex-row">
-        <Button on:click={() => controller.export("jpeg")}>Export Image</Button>
+        <Button on:click={() => exportModalOpened.set(true)}>Export</Button>
     </div>
 </div>
 
@@ -71,4 +78,18 @@
             {/each}
         </div>
     </div>
+</Modal>
+
+<Modal open={exportModalOpened} title="Export">
+    <p slot="paragraph">
+        Choose the image format you want to export your meme to.
+        <br><br>
+        PNG is recommended for lossless quality and transparency.
+    </p>
+
+    <svelte:fragment slot="buttons">
+        <Button variant="inverted" on:click={() => exportImage("webp")}>WEBP</Button>
+        <Button variant="inverted" on:click={() => exportImage("jpeg")}>JPEG</Button>
+        <Button variant="primary" on:click={() => exportImage("png")}>PNG</Button>
+    </svelte:fragment>
 </Modal>

@@ -7,6 +7,7 @@
     export let open = writable(false);
 
     export let title = "";
+    export let paragraph = "";
     export let confirmText = "Proceed";
     export let cancelText = "Cancel";
 
@@ -34,16 +35,20 @@
 
             {#if $$slots.paragraph}
                 <slot name="paragraph" />
+            {:else if paragraph}
+                <p>{paragraph}</p>
+            {/if}
+
+            {#if $$slots.default}
+                <div class="divider-x" />
+
+                <slot />
+
             {/if}
 
             <div class="divider-x" />
-
-            <slot />
-
-            <div class="divider-x" />
-
             <div class="w-full flex flex-row justify-between gap-x-2 [&>*]:flex-1">
-                {#if $$slots.buttons === false}
+                {#if $$slots.buttons === true}
                     <slot name="buttons" />
                 {:else}
                     <Button variant="inverted" on:click={cancel}>{cancelText}</Button>
