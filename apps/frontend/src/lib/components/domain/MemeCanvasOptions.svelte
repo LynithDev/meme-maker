@@ -7,10 +7,19 @@
     import { sameValues } from "$lib/utils/helpers";
 
     const controller = app.controller.get();
+    let container: HTMLDivElement;
 
     onMount(() => {
         controller.listen("elementsUpdated", updated);
         controller.listen("selectedElementsChange", updated);
+
+        controller.listen("inputFocusRequest", (e) => {
+            const elements = container.querySelectorAll(`[name=${e.inputName}]`);
+            if (elements.length > 0) {
+                const el = elements[0] as HTMLInputElement;
+                el.focus();
+            }
+        });
     });
 
     let settings: Settings | null = null;
@@ -66,8 +75,8 @@
 
 <div class="flex flex-col gap-y-2 px-2">
 
-    {#if settings}
-        <div class="grid grid-cols-2 gap-x-2 gap-y-4 [&>*:not(:nth-child(-n+6))]:col-span-2">
+    <div bind:this={container} class="grid grid-cols-2 gap-x-2 gap-y-4 [&>*:not(:nth-child(-n+6))]:col-span-2">
+        {#if settings}
             {#each Object.entries(settings) as [key, value]}
                 <ElementSetting
                     name={key}
@@ -76,9 +85,7 @@
                     onChange={newValue => onChange(key, newValue)}
                 />
             {/each}
-        </div>
-    {:else}
-        <p class="text-center text-sm text-fg">Select an element to edit its properties</p>
-    {/if}
+        {/if}
+    </div>
 
 </div>

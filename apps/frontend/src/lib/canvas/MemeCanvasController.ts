@@ -4,7 +4,17 @@ import type { MemeElementConstructor, MemeElementHandle, ValidOptionTypes } from
 import registerCallbacks from "./registerCallbacks";
 import MathHelper from "$lib/utils/math";
 
-export type Events = "selectedElementsChange" | "elementsUpdated" | "elementsListChanged" | "imageChange";
+export interface EventCallbacks {
+    selectedElementsChange: unknown;
+    elementsUpdated: unknown;
+    elementsListChanged: unknown;
+    imageChange: unknown;
+    inputFocusRequest: {
+        inputName: string;
+    };
+}
+
+export type Events = keyof EventCallbacks;
 
 class MemeCanvasController {
     // Canvas & DOM
@@ -38,12 +48,15 @@ class MemeCanvasController {
     public holdingCtrl: boolean = false;
 
     // Events
-    private _events: Record<Events, (() => void)[]> = {
-        elementsUpdated: [],
-        selectedElementsChange: [],
-        elementsListChanged: [],
-        imageChange: [],
-    };
+    private _events: {
+        [K in Events]: ((e: EventCallbacks[K]) => void)[];
+    } = {
+            elementsUpdated: [],
+            selectedElementsChange: [],
+            elementsListChanged: [],
+            imageChange: [],
+            inputFocusRequest: [],
+        };
 
     public init(canvas: HTMLCanvasElement) {
         const ctx = canvas.getContext("2d", { alpha: false });
@@ -60,12 +73,12 @@ class MemeCanvasController {
     }
 
     // Events
-    public listen<K extends Events>(event: K, cb: () => void) {
+    public listen<K extends Events>(event: K, cb: (e: EventCallbacks[K]) => void) {
         this._events[event].push(cb);
     }
 
-    public emit<K extends Events>(event: K) {
-        this._events[event].forEach(cb => cb());
+    public emit<K extends Events>(event: K, args: EventCallbacks[K] = {} as EventCallbacks[K]) {
+        this._events[event].forEach(cb => cb(args));
     }
 
     // Export
@@ -162,7 +175,7 @@ class MemeCanvasController {
     }
 
     public onDoubleClick(x: number, y: number) {
-        this.selectedElements.forEach(e => e.onDoubleClick(x, y));
+        this.elementAt(x, y)?.onDoubleClick(x, y);
     }
 
     // Element control
