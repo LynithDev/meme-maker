@@ -5,15 +5,12 @@
     import MemeContext from "$lib/components/domain/MemeContext.svelte";
     import MemeCanvasOptions from "$lib/components/domain/MemeCanvasOptions.svelte";
     import MemeCanvasElements from "$lib/components/domain/MemeCanvasElements.svelte";
-    import { initSourcedFonts } from "$lib/utils/fonts";
 
     let canvas: MemeCanvas;
     let context: MemeContext;
     let usable: boolean = false;
 
     onMount(() => {
-        initSourcedFonts();
-
         const unregister = context.init(canvas.getCanvas(), (controller) => {
             controller.listen("imageChange", () => {
                 usable = controller.image !== null;
@@ -25,7 +22,10 @@
 </script>
 
 <section class="h-[20vh] flex flex-col items-center justify-center">
-    <h1>Meme Maker</h1>
+    <div class="flex flex-row items-center justify-center gap-x-2">
+        <img class="h-16 w-16" src="/logo.svg" alt="Meme Maker Logo">
+        <h1>Meme Maker</h1>
+    </div>
     <p>By <a href="https://lynith.dev/">Lynith</a></p>
 </section>
 
