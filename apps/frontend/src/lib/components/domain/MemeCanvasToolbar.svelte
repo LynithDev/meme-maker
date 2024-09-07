@@ -1,10 +1,12 @@
 <script lang="ts">
     import { writable } from "svelte/store";
     import { Settings01Icon } from "svelte-untitled-ui-icons/Settings01Icon";
+    import { onMount } from "svelte";
     import Button from "../base/Button.svelte";
     import ImageChooser from "../base/ImageChooser.svelte";
     import Modal from "../overlay/Modal.svelte";
     import TextInput from "../base/TextInput.svelte";
+    import Switch from "../base/Switch.svelte";
     import app from "$lib/app";
 
     const imageChooserOpened = writable(false);
@@ -12,6 +14,18 @@
     const exportModalOpened = writable(false);
 
     const controller = app.controller.get();
+    const disabled = writable(true);
+
+    // Export props
+    const options = ["webp", "jpeg", "png"] as const;
+    const selected = writable(2);
+    const fileName = writable("meme");
+
+    onMount(() => {
+        controller.listen("imageChange", () => {
+            disabled.set(controller.image === null);
+        });
+    });
 
     function proceed(image: HTMLImageElement) {
         controller.changeImage(image);
@@ -32,8 +46,11 @@
         return Object.keys(controller.padding) as PaddingKey[];
     }
 
-    function exportImage(type: "webp" | "jpeg" | "png") {
-        controller.export(type);
+    function exportImage() {
+        const option = options[$selected];
+        if (option)
+            controller.export($fileName, option);
+
         exportModalOpened.set(false);
     }
 </script>
@@ -41,14 +58,23 @@
 <div class="flex flex-row justify-between gap-x-2">
     <div class="flex flex-row gap-x-2">
         <Button variant="inverted" on:click={e => imageChooserOpened.set(true)}>Choose Image</Button>
-        <Button variant="inverted" on:click={e => canvasModalOpened.set(true)}>
+        <Button
+            variant="inverted"
+            on:click={e => canvasModalOpened.set(true)}
+            disabled={$disabled}
+        >
             <Settings01Icon slot="icon" size="16" />
             Canvas
         </Button>
     </div>
 
     <div class="flex flex-row">
-        <Button on:click={() => exportModalOpened.set(true)}>Export</Button>
+        <Button
+            on:click={() => exportModalOpened.set(true)}
+            disabled={$disabled}
+        >
+            Export
+        </Button>
     </div>
 </div>
 
@@ -77,16 +103,18 @@
     </div>
 </Modal>
 
-<Modal open={exportModalOpened} title="Export">
-    <p slot="paragraph">
-        Choose the image format you want to export your meme to.
-        <br><br>
-        PNG is recommended for lossless quality and transparency.
-    </p>
+<Modal
+    title="Export"
+    open={exportModalOpened}
+    on:confirm={exportImage}
+>
+    <h4>Image Type</h4>
+    <p>Choose the image type you want to export your meme to.</p>
+    <Switch bind:selected={$selected} options={["WEBP", "JPEG", "PNG"]} />
 
-    <svelte:fragment slot="buttons">
-        <Button variant="inverted" on:click={() => exportImage("webp")}>WEBP</Button>
-        <Button variant="inverted" on:click={() => exportImage("jpeg")}>JPEG</Button>
-        <Button variant="primary" on:click={() => exportImage("png")}>PNG</Button>
-    </svelte:fragment>
+    <div class="divider-x"></div>
+
+    <h4>File Name</h4>
+    <p>The name of the exported file.</p>
+    <TextInput value={$fileName} on:change={e => fileName.set(e.detail.currentTarget.value)} />
 </Modal>

@@ -90,6 +90,7 @@
 
     <Button variant="inverted" on:click={() => controller.createElement(TextElement)}>Add Text</Button>
     <Button variant="inverted" on:click={() => controller.createElement(ImageElement)}>Add Image</Button>
+
     <Button
         variant="danger"
         on:click={() => controller.removeElements($selectedElements)}

@@ -91,7 +91,7 @@ class MemeCanvasController {
     }
 
     // Export
-    public export(type: "png" | "jpeg" | "webp") {
+    public export(name: string, type: "png" | "jpeg" | "webp") {
         this.exporting = true;
         this.requestFrame(() => {
             this.canvas.toBlob((blob) => {
@@ -99,7 +99,7 @@ class MemeCanvasController {
                     const url = URL.createObjectURL(blob);
                     const a = document.createElement("a");
                     a.href = url;
-                    a.download = `meme.${type}`;
+                    a.download = `${name}.${type}`;
                     a.click();
                 }
 
