@@ -21,9 +21,9 @@ const config = {
         alias: {
             $styles: "src/styles/*",
         },
-        paths: {
-            base: process.argv.includes("dev") ? "" : process.env.BASE_PATH,
-        },
+        // paths: {
+        //     base: process.argv.includes("dev") ? "" : process.env.BASE_PATH,
+        // },
     },
 };
 
