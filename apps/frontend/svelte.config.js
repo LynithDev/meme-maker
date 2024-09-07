@@ -16,6 +16,7 @@ const config = {
     kit: {
         adapter: adapter({
             precompress: true,
+            strict: true,
         }),
         alias: {
             $styles: "src/styles/*",
