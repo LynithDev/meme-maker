@@ -17,6 +17,8 @@ export default function registerCallbacks(controller: MemeCanvasController): Unr
         const x = MathHelper.clamp(Math.round(mouseX * scale), 0, controller.canvas.width);
         const y = MathHelper.clamp(Math.round(mouseY * scale), 0, controller.canvas.height);
 
+        controller.isTouch = false;
+
         fn.call(controller, x, y);
     }
 
@@ -43,6 +45,8 @@ export default function registerCallbacks(controller: MemeCanvasController): Unr
         const scale = controller.canvas.width / rect.width;
         const x = MathHelper.clamp(Math.round(mouseX * scale), 0, controller.canvas.width);
         const y = MathHelper.clamp(Math.round(mouseY * scale), 0, controller.canvas.height);
+
+        controller.isTouch = true;
 
         controller.mouseX = x;
         controller.mouseY = y;

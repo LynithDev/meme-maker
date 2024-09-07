@@ -90,3 +90,9 @@ export function scaled(
     const canvasRatio = canvas.width / rect.width;
     return Math.round(value * canvasRatio);
 }
+
+export function svgToDataUrl(
+    svg: string,
+) {
+    return `data:image/svg+xml;base64,${btoa(svg)}`;
+}

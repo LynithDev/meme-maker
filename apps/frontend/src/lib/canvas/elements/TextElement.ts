@@ -1,6 +1,7 @@
 import MemeElement, { type ExtendedString, type Filterable, type ValidateOptions } from "../MemeElement";
 import type MemeCanvasController from "../MemeCanvasController";
 import { lineBreakedText, scaled } from "$lib/utils/canvas";
+import MathHelper from "$lib/utils/math";
 
 export const HTextAlignment = ["left", "center", "right"] as const;
 export const VTextAlignment = ["top", "center", "bottom"] as const;
@@ -99,14 +100,17 @@ class TextElement extends MemeElement<TextElementSettings> {
             }
     }
 
-    public override getMinWidth(): number {
+    public override getMinSize() {
         this.ctx.font = this.buildFont();
-        return Math.round(lineBreakedText.getWidth(this.ctx, this._splitText));
-    }
+        const width = Math.round(lineBreakedText.getWidth(this.ctx, this._splitText));
+        const height = Math.round(this._splitText.length * lineBreakedText.getHeight(this.ctx));
 
-    public override getMinHeight(): number {
-        this.ctx.font = this.buildFont();
-        return Math.round(this._splitText.length * lineBreakedText.getHeight(this.ctx));
+        const size = {
+            width: Math.round(MathHelper.sizeOfRotatedRect(width, height, (this.rotation - 90) * Math.PI / 180).width),
+            height: Math.round(MathHelper.sizeOfRotatedRect(width, height, (this.rotation - 90) * Math.PI / 180).height),
+        };
+
+        return size;
     }
 
     public buildFont(): string {

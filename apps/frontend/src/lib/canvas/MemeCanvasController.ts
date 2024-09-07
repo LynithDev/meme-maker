@@ -51,9 +51,10 @@ class MemeCanvasController {
     public selecting: boolean = false;
     public resizing: boolean = false;
 
-    // Keyboard state
+    // Interaction state
     public holdingShift: boolean = false;
     public holdingCtrl: boolean = false;
+    public isTouch: boolean = false;
 
     // Events
     private _events: {
@@ -113,18 +114,20 @@ class MemeCanvasController {
         this.offsetX = x;
         this.offsetY = y;
 
+        if (this.selectedElements.length === 1) {
+            const element = this.selectedElements[0]!;
+            const handle = element.handleAt(x, y);
+
+            if (handle !== null) {
+                this.startResize(element, handle, x, y);
+                return;
+            }
+        }
+
         const foundElement = this.elementAt(x, y);
 
         if (foundElement) {
             const alreadySelected = this.selectedElements.length >= 1 && this.selectedElements.includes(foundElement);
-
-            if (alreadySelected) {
-                const foundHandle = foundElement.handleAt(x, y);
-                if (foundHandle !== null) {
-                    this.startResize(foundElement, foundHandle, x, y);
-                    return;
-                }
-            }
 
             if (this.holdingShift === true) {
                 if (this.selectedElements.includes(foundElement)) {
@@ -192,14 +195,14 @@ class MemeCanvasController {
             return;
 
         this.resizing = true;
-        element.prepareResize(handle, x, y);
+        element.prepareHandle(handle, x, y);
     }
 
     private resizeElement(element: MemeElement | null, x: number, y: number) {
         if (this.resizing !== true || !element)
             return;
 
-        element.resize(x, y);
+        element.handleInteraction(x, y);
     }
 
     private startDrag(element: MemeElement | null, x: number, y: number) {

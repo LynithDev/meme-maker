@@ -24,13 +24,52 @@ export type Settings<T extends Record<string, ValidOptionTypes> = Record<string,
     [K in keyof T]: T[K];
 };
 
-export const getHandleSize = (canvas: HTMLCanvasElement) => scaled(canvas, 12);
-
 export const enum MemeElementHandle {
     TOP_LEFT = 0,
     TOP_RIGHT = 1,
     BOTTOM_LEFT = 2,
     BOTTOM_RIGHT = 3,
+    ROTATION_HANDLE = 4,
+}
+
+export const getHandleSize = (controller: MemeCanvasController) => scaled(controller.canvas, controller.isTouch ? 17 : 12);
+export const getRotationHandleSize = (controller: MemeCanvasController) => scaled(controller.canvas, controller.isTouch ? 25 : 20);
+
+export function getHandlePos(element: MemeElement, handle: MemeElementHandle) {
+    const size = getHandleSize(element.controller);
+    const offset = size / 2;
+
+    switch (handle) {
+        case MemeElementHandle.TOP_LEFT:
+            return {
+                x: element.x - offset,
+                y: element.y - offset,
+            };
+
+        case MemeElementHandle.TOP_RIGHT:
+            return {
+                x: element.x + element.width - size + offset,
+                y: element.y - offset,
+            };
+
+        case MemeElementHandle.BOTTOM_LEFT:
+            return {
+                x: element.x - offset,
+                y: element.y + element.height - size + offset,
+            };
+
+        case MemeElementHandle.BOTTOM_RIGHT:
+            return {
+                x: element.x + element.width - size + offset,
+                y: element.y + element.height - size + offset,
+            };
+
+        case MemeElementHandle.ROTATION_HANDLE:
+            return {
+                x: element.x + element.width / 2 - getRotationHandleSize(element.controller) / 2,
+                y: element.y - getRotationHandleSize(element.controller) * 1.5,
+            };
+    }
 }
 
 abstract class MemeElement<T extends Settings = Settings> {
@@ -45,6 +84,7 @@ abstract class MemeElement<T extends Settings = Settings> {
     private _width: number = 0;
     private _height: number = 0;
 
+    // Degrees
     public rotation: number = 0;
 
     public locked: boolean = false;
@@ -61,12 +101,19 @@ abstract class MemeElement<T extends Settings = Settings> {
     public created(): void {};
     public draw(): void {};
 
+    public getMinSize() {
+        return {
+            width: scaled(this.ctx.canvas, 20),
+            height: scaled(this.ctx.canvas, 20),
+        };
+    }
+
     public getMinWidth(): number {
-        return scaled(this.ctx.canvas, 20);
+        return this.getMinSize().width;
     }
 
     public getMinHeight(): number {
-        return scaled(this.ctx.canvas, 20);
+        return this.getMinSize().height;
     }
 
     // Events
@@ -90,13 +137,13 @@ abstract class MemeElement<T extends Settings = Settings> {
         this.y = MathHelper.clamp(Math.round(y - this.offsetY), 0, this.ctx.canvas.height - this.height);
     }
 
-    public prepareResize(handle: MemeElementHandle | null, x: number, y: number): void {
+    public prepareHandle(handle: MemeElementHandle | null, x: number, y: number): void {
         this.offsetX = Math.round(x - this.x);
         this.offsetY = Math.round(y - this.y);
         this.handle = handle;
     }
 
-    public resize(mouseX: number, mouseY: number): void {
+    public handleInteraction(mouseX: number, mouseY: number): void {
         if (this.locked)
             return;
 
@@ -104,6 +151,15 @@ abstract class MemeElement<T extends Settings = Settings> {
         const y = Math.round(mouseY);
 
         switch (this.handle) {
+            case MemeElementHandle.ROTATION_HANDLE: {
+                const centerX = this.x + this.width / 2;
+                const centerY = this.y + this.height / 2;
+
+                const angle = Math.atan2(y - centerY, x - centerX) * 180 / Math.PI;
+                this.rotation = Math.round(angle) + 90;
+                break;
+            }
+
             case MemeElementHandle.TOP_LEFT: {
                 const newX = Math.round(x - this.offsetX);
                 const newY = Math.round(y - this.offsetY);
@@ -198,19 +254,21 @@ abstract class MemeElement<T extends Settings = Settings> {
     }
 
     public static handleAt(element: MemeElement, x: number, y: number): MemeElementHandle | null {
-        const size = getHandleSize(element.ctx.canvas);
+        const handles = [
+            MemeElementHandle.TOP_LEFT,
+            MemeElementHandle.TOP_RIGHT,
+            MemeElementHandle.BOTTOM_LEFT,
+            MemeElementHandle.BOTTOM_RIGHT,
+            MemeElementHandle.ROTATION_HANDLE,
+        ];
 
-        if (x >= element.x && x <= element.x + size && y >= element.y && y <= element.y + size)
-            return MemeElementHandle.TOP_LEFT;
+        for (const handle of handles) {
+            const { x: handleX, y: handleY } = getHandlePos(element, handle);
+            const size = handle === MemeElementHandle.ROTATION_HANDLE ? getRotationHandleSize(element.controller) : getHandleSize(element.controller);
 
-        else if (x >= element.x + element.width - size && x <= element.x + element.width && y >= element.y && y <= element.y + size)
-            return MemeElementHandle.TOP_RIGHT;
-
-        else if (x >= element.x && x <= element.x + size && y >= element.y + element.height - size && y <= element.y + element.height)
-            return MemeElementHandle.BOTTOM_LEFT;
-
-        else if (x >= element.x + element.width - size && x <= element.x + element.width && y >= element.y + element.height - size && y <= element.y + element.height)
-            return MemeElementHandle.BOTTOM_RIGHT;
+            if (x >= handleX && x <= handleX + size && y >= handleY && y <= handleY + size)
+                return handle;
+        }
 
         return null;
     }
