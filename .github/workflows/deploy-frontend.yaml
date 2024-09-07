@@ -1,10 +1,6 @@
 name: Deploy to GitHub Pages
 
-on:
-  push:
-    branches: 'main'
-    paths:
-      - "apps/frontend/**"
+on: workflow_dispatch
 
 jobs:
   build_site:
