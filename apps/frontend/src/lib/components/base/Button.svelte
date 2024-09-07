@@ -10,19 +10,23 @@
     interface $$Props extends HTMLButtonAttributes {
         variant?: ButtonVariant;
         size?: ButtonSize;
-        smallIconOnly?: boolean;
+        iconOnly?: boolean;
     }
 
 </script>
 
 <button
     on:click {...$$restProps}
-    class={`${variant} ${size}`}
+    class={`${variant} ${size} ${$$props.class}`}
 >
-    <slot name="icon" />
-    <span>
+    {#if $$slots.icon}
+        <slot name="icon" />
+        <span>
+            <slot />
+        </span>
+    {:else}
         <slot />
-    </span>
+    {/if}
 </button>
 
 <style lang="scss">
@@ -47,7 +51,7 @@
         }
     }
 
-    :global(svg) + span {
+    button > :global(svg + span) {
         @apply md:block hidden;
     }
 </style>
