@@ -1,7 +1,5 @@
-import { Image01Icon } from "svelte-untitled-ui-icons/Image01Icon";
 import type MemeCanvasController from "../MemeCanvasController";
 import MemeElement, { type ImageSource, type ValidateOptions } from "../MemeElement";
-import MathHelper from "$lib/utils/math";
 import { svgToDataUrl } from "$lib/utils/canvas";
 
 type ImageElementSettings = ValidateOptions<{

@@ -5,12 +5,13 @@ export default defineConfig({
     svelte: true,
     unocss: true,
     gitignore: true,
-    yaml: true,
+    yaml: false,
     stylistic: {
         indent: 4,
         semi: true,
         quotes: "double",
     },
+    ignores: ["**/.svelte-kit/**/*", "**/build/**/*", "**/dist/**/*", "**/node_modules/**/*"],
 }, [
     {
         rules: {
