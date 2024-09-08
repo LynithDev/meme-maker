@@ -2,12 +2,30 @@
     import { writable } from "svelte/store";
     import { createEventDispatcher } from "svelte";
     import Modal from "../overlay/Modal.svelte";
-    import TextInput from "./TextInput.svelte";
     import FilePicker from "./FilePicker.svelte";
+    import Button from "./Button.svelte";
 
     const image = writable<HTMLImageElement | null>(null);
     let filePicker: FilePicker;
-    let urlInput: TextInput;
+
+    const pasteMessage = writable<string | null>(null);
+    const supportsClipboard = () => {
+        const isSupported = () => {
+            try {
+                return !!navigator.clipboard && !!navigator.clipboard.read;
+            }
+            // eslint-disable-next-line unused-imports/no-unused-vars -- Unused
+            catch (e) {
+                return false;
+            }
+        };
+
+        const supported = isSupported();
+        if (!supported)
+            pasteMessage.set("Your browser does not support clipboard access.");
+
+        return supported;
+    };
 
     export let open = writable(false);
 
@@ -15,6 +33,24 @@
         confirm: HTMLImageElement;
         cancel: void;
     }>();
+
+    function useBlob(blob: Blob, set: () => void) {
+        if (blob.type.startsWith("image/")) {
+            const reader = new FileReader();
+            reader.onload = () => {
+                const img = new Image();
+                img.src = reader.result as string;
+                img.onload = () => {
+                    image.set(img);
+                    set();
+                };
+                img.onerror = () => {
+                    image.set(null);
+                };
+            };
+            reader.readAsDataURL(blob);
+        }
+    }
 
     function useFile(files: FileList | null, set: () => void) {
         const file = files?.[0];
@@ -35,41 +71,9 @@
         }
     }
 
-    function useLink(url: string, set: () => void) {
-        if (url.startsWith("http://") || url.startsWith("https://")) {
-            const img = new Image();
-            img.src = url;
-            img.onload = () => {
-                image.set(img);
-                set();
-            };
-            img.onerror = () => {
-                image.set(null);
-            };
-        }
-    }
-
     function handleFileEvent(event: CustomEvent<FileList | null>) {
         const files = event.detail;
-        useFile(files, () => {
-            urlInput.$set({ value: "" });
-        });
-    }
-
-    let timeout: NodeJS.Timeout | null = null;
-    function handleInputEvent(event: Event) {
-        const input = event.currentTarget as HTMLInputElement;
-        if (!input)
-            return;
-
-        if (timeout)
-            clearTimeout(timeout);
-
-        timeout = setTimeout(() => {
-            useLink(input.value, () => {
-                filePicker.clear();
-            });
-        }, 300);
+        useFile(files, () => {});
     }
 
     function handlePasteEvent(event: ClipboardEvent) {
@@ -78,7 +82,6 @@
 
         if (event.clipboardData.files.length > 0)
             useFile(event.clipboardData.files, () => {
-                urlInput.$set({ value: "" });
                 filePicker.clear();
             });
     }
@@ -94,6 +97,28 @@
     function cancel() {
         image.set(null);
         dispatcher("cancel");
+    }
+
+    async function fromClipboard() {
+        try {
+            if (supportsClipboard()) {
+                const value = await navigator.clipboard.read();
+                const item = value.at(0);
+                if (!item)
+                    return;
+
+                item.types.forEach((type) => {
+                    if (type.startsWith("image/"))
+                        item.getType(type).then((blob) => {
+                            useBlob(blob, () => {});
+                        });
+                });
+            }
+        }
+        // eslint-disable-next-line unused-imports/no-unused-vars -- Unused
+        catch (e) {
+            pasteMessage.set("Missing permissions to read from your clipboard.");
+        }
     }
 </script>
 
@@ -116,13 +141,18 @@
 
     <p>or</p>
 
-    <TextInput
-        bind:this={urlInput}
-        on:input={e => handleInputEvent(e.detail)}
-        name="url-input"
+    <Button
         class="w-full"
-        placeholder="https://example.com/image.png"
-    />
+        variant="inverted"
+        on:click={fromClipboard}
+        disabled={!supportsClipboard()}
+    >
+        Paste from clipboard
+    </Button>
+
+    {#if $pasteMessage}
+        <p class="text-red-500">{$pasteMessage}</p>
+    {/if}
 
     {#if $image}
         <div class="divider-x" />
