@@ -12,6 +12,7 @@
     "scripts": {
         "frontend": "pnpm --filter @meme-gen/frontend",
         "backend": "pnpm --filter @meme-gen/backend",
+        "dev": "pnpm run /frontend/ dev",
         "lint": "eslint"
     },
     "devDependencies": {
