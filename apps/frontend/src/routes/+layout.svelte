@@ -4,6 +4,7 @@
     import "$styles/global.scss";
     import { onMount } from "svelte";
     import { writable } from "svelte/store";
+    import { LinkExternal01Icon } from "svelte-untitled-ui-icons/LinkExternal01Icon";
     import { getTheme, setTheme } from "$lib/utils/theme";
     import ThemeSwitcher from "$lib/components/ThemeSwitcher.svelte";
 
@@ -33,4 +34,13 @@
     </div>
 
     <slot />
+
+    <footer class="w-full">
+        <div class="flex flex-col items-center justify-center">
+            <a target="_blank" href={import.meta.env.VITE_REPO_URL} class="flex items-center justify-center text-sm text-fg/70 hover:text-blue">
+                View this on GitHub
+                <LinkExternal01Icon class="ml-1 inline-block h-3 w-3" />
+            </a>
+        </div>
+    </footer>
 </main>

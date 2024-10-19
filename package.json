@@ -5,6 +5,10 @@
     "description": "meme maker",
     "author": "LynithDev",
     "license": "MIT",
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/LynithDev/meme-maker"
+    },
     "scripts": {
         "frontend": "pnpm --filter @meme-gen/frontend",
         "backend": "pnpm --filter @meme-gen/backend",
