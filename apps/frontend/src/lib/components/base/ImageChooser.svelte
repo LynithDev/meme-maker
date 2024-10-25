@@ -130,7 +130,7 @@
     on:cancel={cancel}
 >
     <h3 slot="title">Choose Image</h3>
-    <p slot="paragraph">Choose an image (accepted PNG, JPG, JPEG, WEBP) from your computer or by pasting the image from your clipboard. You can also provide a link to an image.</p>
+    <p slot="paragraph">Choose an image (accepted PNG, JPG, JPEG, WEBP) from your computer or by pasting the image from your clipboard.</p>
 
     <FilePicker
         bind:this={filePicker}

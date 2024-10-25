@@ -48,22 +48,22 @@
 </script>
 
 <div class={`h-full max-h-full flex flex-col justify-start gap-y-2 md:px-2 ${className}`} {...$$restProps}>
-    {#if $elements.length > 0}
-        <!-- svelte-ignore a11y-click-events-have-key-events -->
-        <!-- svelte-ignore a11y-no-static-element-interactions -->
-        <div
-            class="h-full max-h-full flex flex-1 flex-col items-center gap-y-2 overflow-hidden rounded-lg bg-secondary p-2"
-            on:click={(e) => {
-                if (e.target === e.currentTarget) {
-                    e.stopImmediatePropagation();
-                    controller.clearSelected();
-                }
-            }}
-        >
-            <h4>Elements</h4>
+    <!-- svelte-ignore a11y-click-events-have-key-events -->
+    <!-- svelte-ignore a11y-no-static-element-interactions -->
+    <div
+        class="h-full max-h-full flex flex-1 flex-col items-center gap-y-2 overflow-hidden rounded-lg bg-secondary p-2"
+        on:click={(e) => {
+            if (e.target === e.currentTarget) {
+                e.stopImmediatePropagation();
+                controller.clearSelected();
+            }
+        }}
+    >
+        <h4>Elements</h4>
 
-            <div class="divider-x" />
+        <div class="divider-x" />
 
+        {#if $elements.length > 0}
             <div class="max-h-full w-full flex flex-1 flex-col gap-y-1 overflow-auto">
                 {#each $elements as element}
                     <button
@@ -84,9 +84,9 @@
                     </button>
                 {/each}
             </div>
+        {/if}
 
-        </div>
-    {/if}
+    </div>
 
     <Button variant="inverted" on:click={() => controller.createElement(TextElement)}>Add Text</Button>
     <Button variant="inverted" on:click={() => controller.createElement(ImageElement)}>Add Image</Button>
