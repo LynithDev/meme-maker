@@ -10,4 +10,11 @@ export default defineConfig({
         }),
         sveltekit(),
     ],
+    css: {
+        preprocessorOptions: {
+            scss: {
+                api: "modern-compiler",
+            },
+        },
+    },
 });
