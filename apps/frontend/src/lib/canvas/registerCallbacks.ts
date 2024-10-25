@@ -2,8 +2,17 @@ import MathHelper from "../utils/math";
 import type MemeCanvasController from "./MemeCanvasController";
 
 type UnregisterCallbacks = () => void;
+type MouseEventSourceCapabilities = MouseEvent & {
+    sourceCapabilities?: {
+        firesTouchEvents?: boolean;
+    };
+};
+
 export default function registerCallbacks(controller: MemeCanvasController): UnregisterCallbacks {
-    function mouseEvent(event: MouseEvent, fn: (x: number, y: number) => void) {
+    function mouseEvent(event: MouseEventSourceCapabilities, fn: (x: number, y: number) => void) {
+        if (event.sourceCapabilities?.firesTouchEvents === true)
+            return;
+
         if (event.button !== 0)
             return;
 
