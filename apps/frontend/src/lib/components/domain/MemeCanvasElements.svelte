@@ -45,6 +45,14 @@
 
         controller.emit("selectedElementsChange");
     }
+
+    // I hate svelte with typescript
+    function elementsContainerClicked(e: any) {
+        if (e.target?.tagName.toLowerCase() !== "button") {
+            e.stopImmediatePropagation();
+            controller.clearSelected();
+        }
+    }
 </script>
 
 <div class={`h-full max-h-full flex flex-col justify-start gap-y-2 md:px-2 ${className}`} {...$$restProps}>
@@ -52,12 +60,7 @@
     <!-- svelte-ignore a11y-no-static-element-interactions -->
     <div
         class="h-full max-h-full flex flex-1 flex-col items-center gap-y-2 overflow-hidden rounded-lg bg-secondary p-2"
-        on:click={(e) => {
-            if (e.target === e.currentTarget) {
-                e.stopImmediatePropagation();
-                controller.clearSelected();
-            }
-        }}
+        on:click={e => elementsContainerClicked(e)}
     >
         <h4>Elements</h4>
 
