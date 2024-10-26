@@ -1,6 +1,6 @@
 import type MemeCanvasController from "./MemeCanvasController";
-import MathHelper from "$lib/utils/math";
 import { scaled } from "$lib/utils/canvas";
+import MathHelper from "$lib/utils/math";
 
 /* eslint-disable unused-imports/no-unused-vars -- Events lol */
 
@@ -36,37 +36,34 @@ export const getHandleSize = (controller: MemeCanvasController) => scaled(contro
 export const getRotationHandleSize = (controller: MemeCanvasController) => scaled(controller.canvas, controller.isTouch ? 25 : 20);
 
 export function getHandlePos(element: MemeElement, handle: MemeElementHandle) {
-    const size = getHandleSize(element.controller);
-    const offset = size / 2;
-
     switch (handle) {
         case MemeElementHandle.TOP_LEFT:
             return {
-                x: element.x - offset,
-                y: element.y - offset,
+                x: element.x,
+                y: element.y,
             };
 
         case MemeElementHandle.TOP_RIGHT:
             return {
-                x: element.x + element.width - size + offset,
-                y: element.y - offset,
+                x: element.x + element.width,
+                y: element.y,
             };
 
         case MemeElementHandle.BOTTOM_LEFT:
             return {
-                x: element.x - offset,
-                y: element.y + element.height - size + offset,
+                x: element.x,
+                y: element.y + element.height,
             };
 
         case MemeElementHandle.BOTTOM_RIGHT:
             return {
-                x: element.x + element.width - size + offset,
-                y: element.y + element.height - size + offset,
+                x: element.x + element.width,
+                y: element.y + element.height,
             };
 
         case MemeElementHandle.ROTATION_HANDLE:
             return {
-                x: element.x + element.width / 2 - getRotationHandleSize(element.controller) / 2,
+                x: element.x + element.width / 2,
                 y: element.y - getRotationHandleSize(element.controller) * 1.5,
             };
     }
@@ -137,9 +134,16 @@ abstract class MemeElement<T extends Settings = Settings> {
         this.y = MathHelper.clamp(Math.round(y - this.offsetY), 0, this.ctx.canvas.height - this.height);
     }
 
+    private _rotationPrev: number = 0;
     public prepareHandle(handle: MemeElementHandle | null, x: number, y: number): void {
-        this.offsetX = Math.round(x - this.x);
-        this.offsetY = Math.round(y - this.y);
+        if (handle !== null) {
+            const handlePos = getHandlePos(this, handle);
+
+            this.offsetX = Math.round(x - handlePos.x);
+            this.offsetY = Math.round(y - handlePos.y);
+        }
+
+        this._rotationPrev = this.rotation;
         this.handle = handle;
     }
 
@@ -147,22 +151,22 @@ abstract class MemeElement<T extends Settings = Settings> {
         if (this.locked)
             return;
 
-        const x = Math.round(mouseX);
-        const y = Math.round(mouseY);
-
         switch (this.handle) {
             case MemeElementHandle.ROTATION_HANDLE: {
                 const centerX = this.x + this.width / 2;
                 const centerY = this.y + this.height / 2;
 
-                const angle = Math.atan2(y - centerY, x - centerX) * 180 / Math.PI;
-                this.rotation = Math.round(angle) + 90;
+                const angle = Math.atan2(mouseY - centerY, mouseX - centerX) * 180 / Math.PI;
+                this.rotation = ((Math.round(angle) + 90 + this._rotationPrev) % 360);
+                if (this.rotation < 0)
+                    this.rotation += 360;
+
                 break;
             }
 
             case MemeElementHandle.TOP_LEFT: {
-                const newX = Math.round(x - this.offsetX);
-                const newY = Math.round(y - this.offsetY);
+                const newX = Math.round(mouseX - this.offsetX);
+                const newY = Math.round(mouseY - this.offsetY);
 
                 const newWidth = this.x + this.width - newX;
                 const newHeight = this.y + this.height - newY;
@@ -181,9 +185,9 @@ abstract class MemeElement<T extends Settings = Settings> {
             }
 
             case MemeElementHandle.TOP_RIGHT: {
-                const newY = Math.round(y - this.offsetY);
+                const newY = Math.round(mouseY - this.offsetY);
 
-                const newWidth = x - this.x;
+                const newWidth = mouseX - this.x - this.offsetX;
                 const newHeight = this.y + this.height - newY;
 
                 if (newWidth >= this.getMinWidth())
@@ -198,10 +202,10 @@ abstract class MemeElement<T extends Settings = Settings> {
             }
 
             case MemeElementHandle.BOTTOM_LEFT: {
-                const newX = Math.round(x - this.offsetX);
+                const newX = Math.round(mouseX - this.offsetX);
 
                 const newWidth = this.x + this.width - newX;
-                const newHeight = y - this.y;
+                const newHeight = mouseY - this.y - this.offsetY;
 
                 if (newWidth >= this.getMinWidth()) {
                     this.width = newWidth;
@@ -215,8 +219,8 @@ abstract class MemeElement<T extends Settings = Settings> {
             }
 
             case MemeElementHandle.BOTTOM_RIGHT: {
-                const newWidth = x - this.x;
-                const newHeight = y - this.y;
+                const newWidth = mouseX - this.x - this.offsetX;
+                const newHeight = mouseY - this.y - this.offsetY;
 
                 if (newWidth >= this.getMinWidth())
                     this.width = newWidth;
@@ -264,9 +268,10 @@ abstract class MemeElement<T extends Settings = Settings> {
 
         for (const handle of handles) {
             const { x: handleX, y: handleY } = getHandlePos(element, handle);
-            const size = handle === MemeElementHandle.ROTATION_HANDLE ? getRotationHandleSize(element.controller) : getHandleSize(element.controller);
+            const size = Math.round(handle === MemeElementHandle.ROTATION_HANDLE ? getRotationHandleSize(element.controller) : getHandleSize(element.controller));
+            const offset = size / 2;
 
-            if (x >= handleX && x <= handleX + size && y >= handleY && y <= handleY + size)
+            if (x >= handleX - offset && x <= handleX + offset && y >= handleY - offset && y <= handleY + offset)
                 return handle;
         }
 

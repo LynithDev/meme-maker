@@ -1,8 +1,8 @@
-import MemeCanvasRenderer from "./MemeCanvasRenderer";
 import type MemeElement from "./MemeElement";
 import type { MemeElementConstructor, MemeElementHandle, ValidOptionTypes } from "./MemeElement";
-import registerCallbacks from "./registerCallbacks";
 import MathHelper from "$lib/utils/math";
+import MemeCanvasRenderer from "./MemeCanvasRenderer";
+import registerCallbacks from "./registerCallbacks";
 
 export interface EventCallbacks {
     selectedElementsChange: unknown;
@@ -202,7 +202,7 @@ class MemeCanvasController {
         if (this.resizing !== true || !element)
             return;
 
-        element.handleInteraction(x, y);
+        element.handleInteraction(Math.round(x), Math.round(y));
     }
 
     private startDrag(element: MemeElement | null, x: number, y: number) {

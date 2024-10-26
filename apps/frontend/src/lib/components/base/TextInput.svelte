@@ -1,6 +1,6 @@
 <script lang="ts">
-    import { createEventDispatcher } from "svelte";
     import type { FormEventHandler, HTMLInputAttributes } from "svelte/elements";
+    import { createEventDispatcher } from "svelte";
 
     type ValidTypes = "text" | "password" | "number";
     type ValidationType = ((value: string) => boolean) | "float" | "integer";
@@ -34,9 +34,9 @@
     const validateValue = (value: string) => {
         switch (validate) {
             case "float":
-                return value.match(/^\d+(\.\d+)?$/) !== null;
+                return value.match(/^-?\d+(\.\d+)?$/) !== null;
             case "integer":
-                return value.match(/^\d+$/) !== null;
+                return value.match(/^-?\d+$/) !== null;
             default:
                 return validate(value);
         }
@@ -78,9 +78,9 @@
 </script>
 
 {#if multiline}
-    <textarea {value} on:change={handleChange} on:input={handleInput} on:paste data-valid={valid} {...$$restProps}></textarea>
+    <textarea data-valid={valid} on:change={handleChange} on:input={handleInput} on:paste {value} {...$$restProps}></textarea>
 {:else}
-    <input {value} type={getInputType()} on:change={handleChange} on:input={handleInput} on:paste data-valid={valid} {...$$restProps}>
+    <input data-valid={valid} on:change={handleChange} on:input={handleInput} on:paste type={getInputType()} {value} {...$$restProps}>
 {/if}
 
 <style lang="scss">
