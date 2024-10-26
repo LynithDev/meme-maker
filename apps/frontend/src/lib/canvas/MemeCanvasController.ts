@@ -91,9 +91,13 @@ class MemeCanvasController {
     }
 
     // Export
-    public export(name: string, type: "png" | "jpeg" | "webp") {
+    public export(name: string, type: "png" | "jpeg" | "webp", watermark: boolean) {
         this.exporting = true;
+
         this.requestFrame(() => {
+            if (watermark)
+                this.renderer.drawWatermark();
+
             this.canvas.toBlob((blob) => {
                 if (blob) {
                     const url = URL.createObjectURL(blob);

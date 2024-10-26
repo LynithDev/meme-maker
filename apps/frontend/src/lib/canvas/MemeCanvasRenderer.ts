@@ -1,5 +1,5 @@
 import type MemeCanvasController from "./MemeCanvasController";
-import { svgToDataUrl } from "$lib/utils/canvas";
+import { scaled, svgToDataUrl } from "$lib/utils/canvas";
 import { getHandlePos, getHandleSize, getRotationHandleSize, MemeElementHandle } from "./MemeElement";
 
 const rotateSvg = svgToDataUrl(`<svg width="100%" height="100%" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -25,6 +25,13 @@ class MemeCanvasRenderer {
         this.drawSelectionBox();
 
         this.drawFramerate();
+    }
+
+    public drawWatermark() {
+        this.ctx.textAlign = "left";
+        this.ctx.font = `${scaled(this.ctx.canvas, 10)}px Outfit`;
+        this.ctx.fillStyle = "#f0505080";
+        this.ctx.fillText("Made with meme.lynith.dev", 4, this.ctx.canvas.height - 4);
     }
 
     private drawElements() {

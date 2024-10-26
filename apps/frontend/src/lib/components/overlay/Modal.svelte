@@ -30,7 +30,7 @@
             {#if $$slots.title}
                 <slot name="title" />
             {:else}
-                <h3 class="font-bold">{title}</h3>
+                <h2 class="font-bold">{title}</h2>
             {/if}
 
             {#if $$slots.paragraph}
@@ -46,7 +46,7 @@
             {/if}
 
             <div class="divider-x" />
-            <div class="w-full flex flex-col justify-between gap-2 [&>*]:flex-1 md:flex-row">
+            <div class="w-full flex flex-col-reverse justify-between gap-2 [&>*]:flex-1 md:flex-row">
                 {#if $$slots.buttons === true}
                     <slot name="buttons" />
                 {:else}

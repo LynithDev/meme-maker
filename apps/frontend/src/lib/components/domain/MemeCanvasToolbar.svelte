@@ -4,6 +4,7 @@
     import { writable } from "svelte/store";
     import { Settings01Icon } from "svelte-untitled-ui-icons/Settings01Icon";
     import Button from "../base/Button.svelte";
+    import Conditional from "../base/Conditional.svelte";
     import ImageChooser from "../base/ImageChooser.svelte";
     import Switch from "../base/Switch.svelte";
     import TextInput from "../base/TextInput.svelte";
@@ -20,6 +21,7 @@
     const options = ["webp", "jpeg", "png"] as const;
     const selected = writable(2);
     const fileName = writable("meme");
+    const watermark = writable(true);
 
     onMount(() => {
         controller.listen("imageChange", () => {
@@ -49,7 +51,7 @@
     function exportImage() {
         const option = options[$selected];
         if (option)
-            controller.export($fileName, option);
+            controller.export($fileName, option, $watermark);
 
         exportModalOpened.set(false);
     }
@@ -108,13 +110,19 @@
     open={exportModalOpened}
     title="Export"
 >
+    <h4>File Name</h4>
+    <p>The name of the exported file.</p>
+    <TextInput on:change={e => fileName.set(e.detail.currentTarget.value)} value={$fileName} />
+
+    <div class="divider-x"></div>
+
     <h4>Image Type</h4>
     <p>Choose the image type you want to export your meme to.</p>
     <Switch bind:selected={$selected} options={["WEBP", "JPEG", "PNG"]} />
 
     <div class="divider-x"></div>
+    <Conditional bind:value={$watermark} type="checkbox">
+        Include Watermark
+    </Conditional>
 
-    <h4>File Name</h4>
-    <p>The name of the exported file.</p>
-    <TextInput on:change={e => fileName.set(e.detail.currentTarget.value)} value={$fileName} />
 </Modal>
