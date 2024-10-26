@@ -1,8 +1,8 @@
 <script lang="ts">
-    import { createEventDispatcher } from "svelte";
     import type { HTMLInputAttributes } from "svelte/elements";
-    import { writable } from "svelte/store";
     import { randomString } from "$lib/utils/helpers";
+    import { createEventDispatcher } from "svelte";
+    import { writable } from "svelte/store";
 
     export let name: string = randomString();
     const chosenFileNames = writable<string | null>(null);
@@ -34,7 +34,7 @@
     }
 </script>
 
-<label for={name} class={$$props.class}>
+<label class={$$props.class} for={name}>
     <div>
         {#if $chosenFileNames}
             <span>
@@ -47,7 +47,7 @@
         {/if}
     </div>
 
-    <input on:change={handleChange} id={name} type="file" {...$$restProps}>
+    <input id={name} on:change={handleChange} type="file" {...$$restProps}>
 </label>
 
 <style lang="scss">

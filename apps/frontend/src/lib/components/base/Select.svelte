@@ -6,7 +6,7 @@
     }
 </script>
 
-<select on:change on:select on:click {...$$restProps}>
+<select on:change on:click on:select {...$$restProps}>
     <slot />
 </select>
 

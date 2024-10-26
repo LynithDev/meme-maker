@@ -1,5 +1,5 @@
-import MathHelper from "../utils/math";
 import type MemeCanvasController from "./MemeCanvasController";
+import MathHelper from "../utils/math";
 
 type UnregisterCallbacks = () => void;
 type MouseEventSourceCapabilities = MouseEvent & {

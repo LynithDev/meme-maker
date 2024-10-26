@@ -1,14 +1,14 @@
 <script lang="ts">
+    import type { HTMLAttributes } from "svelte/elements";
+    import app from "$lib/app";
+    import ImageElement from "$lib/canvas/elements/ImageElement";
+    import TextElement from "$lib/canvas/elements/TextElement";
+    import MemeElement from "$lib/canvas/MemeElement";
     import { onMount } from "svelte";
     import { writable } from "svelte/store";
-    import type { HTMLAttributes } from "svelte/elements";
     import { Heading01Icon } from "svelte-untitled-ui-icons/Heading01Icon";
     import { Image01Icon } from "svelte-untitled-ui-icons/Image01Icon";
     import Button from "../base/Button.svelte";
-    import app from "$lib/app";
-    import TextElement from "$lib/canvas/elements/TextElement";
-    import ImageElement from "$lib/canvas/elements/ImageElement";
-    import MemeElement from "$lib/canvas/MemeElement";
 
     const controller = app.controller.get();
     const elements = writable<MemeElement[]>([]);
@@ -88,13 +88,13 @@
 
     </div>
 
-    <Button variant="inverted" on:click={() => controller.createElement(TextElement)}>Add Text</Button>
-    <Button variant="inverted" on:click={() => controller.createElement(ImageElement)}>Add Image</Button>
+    <Button on:click={() => controller.createElement(TextElement)} variant="inverted">Add Text</Button>
+    <Button on:click={() => controller.createElement(ImageElement)} variant="inverted">Add Image</Button>
 
     <Button
-        variant="danger"
-        on:click={() => controller.removeElements($selectedElements)}
         disabled={$selectedElements.length === 0}
+        on:click={() => controller.removeElements($selectedElements)}
+        variant="danger"
     >
         Delete
     </Button>

@@ -50,7 +50,7 @@
                 {#if $$slots.buttons === true}
                     <slot name="buttons" />
                 {:else}
-                    <Button variant="inverted" on:click={cancel}>{cancelText}</Button>
+                    <Button on:click={cancel} variant="inverted">{cancelText}</Button>
                     <Button on:click={confirm}>{confirmText}</Button>
                 {/if}
             </div>

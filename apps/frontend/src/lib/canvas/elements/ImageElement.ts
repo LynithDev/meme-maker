@@ -1,6 +1,6 @@
 import type MemeCanvasController from "../MemeCanvasController";
-import MemeElement, { type ImageSource, type ValidateOptions } from "../MemeElement";
 import { svgToDataUrl } from "$lib/utils/canvas";
+import MemeElement, { type ImageSource, type ValidateOptions } from "../MemeElement";
 
 type ImageElementSettings = ValidateOptions<{
     image: ImageSource;

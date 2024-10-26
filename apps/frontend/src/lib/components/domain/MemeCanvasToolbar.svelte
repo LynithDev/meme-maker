@@ -1,13 +1,13 @@
 <script lang="ts">
+    import app from "$lib/app";
+    import { onMount } from "svelte";
     import { writable } from "svelte/store";
     import { Settings01Icon } from "svelte-untitled-ui-icons/Settings01Icon";
-    import { onMount } from "svelte";
     import Button from "../base/Button.svelte";
     import ImageChooser from "../base/ImageChooser.svelte";
-    import Modal from "../overlay/Modal.svelte";
-    import TextInput from "../base/TextInput.svelte";
     import Switch from "../base/Switch.svelte";
-    import app from "$lib/app";
+    import TextInput from "../base/TextInput.svelte";
+    import Modal from "../overlay/Modal.svelte";
 
     const imageChooserOpened = writable(false);
     const canvasModalOpened = writable(false);
@@ -57,28 +57,28 @@
 
 <div class="flex flex-row justify-between gap-x-2">
     <div class="flex flex-row gap-x-2">
-        <Button variant="inverted" on:click={e => imageChooserOpened.set(true)}>Choose Image</Button>
+        <Button on:click={e => imageChooserOpened.set(true)} variant="inverted">Choose Image</Button>
         <Button
-            variant="inverted"
-            on:click={e => canvasModalOpened.set(true)}
             disabled={$disabled}
+            on:click={e => canvasModalOpened.set(true)}
+            variant="inverted"
         >
-            <Settings01Icon slot="icon" size="16" />
+            <Settings01Icon size="16" slot="icon" />
             Canvas
         </Button>
     </div>
 
     <div class="flex flex-row">
         <Button
-            on:click={() => exportModalOpened.set(true)}
             disabled={$disabled}
+            on:click={() => exportModalOpened.set(true)}
         >
             Export
         </Button>
     </div>
 </div>
 
-<ImageChooser open={imageChooserOpened} on:confirm={e => proceed(e.detail)} />
+<ImageChooser on:confirm={e => proceed(e.detail)} open={imageChooserOpened} />
 
 <Modal open={canvasModalOpened} title="Canvas Settings">
     <div class="flex flex-col gap-y-2">
@@ -90,12 +90,12 @@
                         {paddingKey.charAt(0).toUpperCase() + paddingKey.slice(1)}
                     </label>
                     <TextInput
-                        name={paddingKey}
+                        class="text-center"
                         id={`padding-${paddingKey}-input`}
+                        name={paddingKey}
+                        on:validatedInput={e => changePadding(paddingKey, Number.parseFloat(e.detail.currentTarget.value))}
                         validate="integer"
                         value={controller.padding[paddingKey]}
-                        class="text-center"
-                        on:validatedInput={e => changePadding(paddingKey, Number.parseFloat(e.detail.currentTarget.value))}
                     />
                 </div>
             {/each}
@@ -104,9 +104,9 @@
 </Modal>
 
 <Modal
-    title="Export"
-    open={exportModalOpened}
     on:confirm={exportImage}
+    open={exportModalOpened}
+    title="Export"
 >
     <h4>Image Type</h4>
     <p>Choose the image type you want to export your meme to.</p>
@@ -116,5 +116,5 @@
 
     <h4>File Name</h4>
     <p>The name of the exported file.</p>
-    <TextInput value={$fileName} on:change={e => fileName.set(e.detail.currentTarget.value)} />
+    <TextInput on:change={e => fileName.set(e.detail.currentTarget.value)} value={$fileName} />
 </Modal>

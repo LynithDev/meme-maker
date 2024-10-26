@@ -1,9 +1,9 @@
 <script lang="ts">
-    import { writable } from "svelte/store";
     import { createEventDispatcher } from "svelte";
+    import { writable } from "svelte/store";
     import Modal from "../overlay/Modal.svelte";
-    import FilePicker from "./FilePicker.svelte";
     import Button from "./Button.svelte";
+    import FilePicker from "./FilePicker.svelte";
 
     const image = writable<HTMLImageElement | null>(null);
     let filePicker: FilePicker;
@@ -125,27 +125,27 @@
 <svelte:window on:paste={handlePasteEvent} />
 
 <Modal
-    open={open}
-    on:confirm={proceed}
     on:cancel={cancel}
+    on:confirm={proceed}
+    open={open}
 >
     <h3 slot="title">Choose Image</h3>
     <p slot="paragraph">Choose an image (accepted PNG, JPG, JPEG, WEBP) from your computer or by pasting the image from your clipboard.</p>
 
     <FilePicker
-        bind:this={filePicker}
-        on:change={handleFileEvent}
-        class="w-full"
         accept="image/*"
+        bind:this={filePicker}
+        class="w-full"
+        on:change={handleFileEvent}
     />
 
     <p>or</p>
 
     <Button
         class="w-full"
-        variant="inverted"
-        on:click={fromClipboard}
         disabled={!supportsClipboard()}
+        on:click={fromClipboard}
+        variant="inverted"
     >
         Paste from clipboard
     </Button>
@@ -157,6 +157,6 @@
     {#if $image}
         <div class="divider-x" />
         <h4>Preview</h4>
-        <img class="border/40 h-full max-h-50 border rounded-md" src={$image.src} alt="Preview" />
+        <img alt="Preview" class="border/40 h-full max-h-50 border rounded-md" src={$image.src} />
     {/if}
 </Modal>

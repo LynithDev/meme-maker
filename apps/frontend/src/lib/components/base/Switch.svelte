@@ -27,8 +27,8 @@
 <div class="options">
     {#each options as option, index}
         <Button
-            variant={selected === index ? "primary" : "inverted"}
             on:click={() => setSelected(index)}
+            variant={selected === index ? "primary" : "inverted"}
         >
             {option}
         </Button>

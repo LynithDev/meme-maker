@@ -1,10 +1,10 @@
 <script lang="ts">
-    import { Moon01Icon } from "svelte-untitled-ui-icons/Moon01Icon";
-    import { ClockIcon } from "svelte-untitled-ui-icons/ClockIcon";
-    import { SunIcon } from "svelte-untitled-ui-icons/SunIcon";
-    import { onMount } from "svelte";
-    import Button from "./base/Button.svelte";
     import theme, { type PageTheme, pageThemes } from "$lib/utils/theme";
+    import { onMount } from "svelte";
+    import { ClockIcon } from "svelte-untitled-ui-icons/ClockIcon";
+    import { Moon01Icon } from "svelte-untitled-ui-icons/Moon01Icon";
+    import { SunIcon } from "svelte-untitled-ui-icons/SunIcon";
+    import Button from "./base/Button.svelte";
 
     let iconContainer: HTMLDivElement;
 
@@ -45,9 +45,9 @@
 
 <Button
     aria-label="Switch Theme"
-    variant="inverted"
     class="relative overflow-hidden px-sm!"
     on:click={nextTheme}
+    variant="inverted"
 >
     <span class="h-5 w-5"></span>
     <div bind:this={iconContainer} class="absolute flex flex-col items-start justify-start gap-y-4 transition-transform">

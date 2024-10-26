@@ -1,10 +1,10 @@
 <script lang="ts">
-    import { onMount } from "svelte";
-    import ElementSetting from "./Setting.svelte";
-    import app from "$lib/app";
     import type MemeElement from "$lib/canvas/MemeElement";
     import type { Settings, ValidOptionTypes } from "$lib/canvas/MemeElement";
+    import app from "$lib/app";
     import { sameValues } from "$lib/utils/helpers";
+    import { onMount } from "svelte";
+    import ElementSetting from "./Setting.svelte";
 
     const controller = app.controller.get();
     let container: HTMLDivElement;
@@ -79,10 +79,10 @@
         <div class="grid grid-cols-2 my-2 gap-x-2 gap-y-4 [&>*:not(:nth-child(-n+6))]:col-span-2 md:mt-0">
             {#each Object.entries(settings) as [key, value]}
                 <ElementSetting
-                    name={key}
-                    value={value}
                     mixed={mixed.includes(key)}
+                    name={key}
                     onChange={newValue => onChange(key, newValue)}
+                    value={value}
                 />
             {/each}
         </div>

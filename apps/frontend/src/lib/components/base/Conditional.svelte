@@ -1,8 +1,8 @@
 <script lang="ts">
-    import { createEventDispatcher } from "svelte";
     import type { ChangeEventHandler, HTMLInputAttributes } from "svelte/elements";
-    import { CheckIcon } from "svelte-untitled-ui-icons/CheckIcon";
     import { randomString } from "$lib/utils/helpers";
+    import { createEventDispatcher } from "svelte";
+    import { CheckIcon } from "svelte-untitled-ui-icons/CheckIcon";
 
     export let name: string = randomString();
     export let type: "checkbox" | "toggle" = "checkbox";
@@ -27,8 +27,8 @@
 
 </script>
 
-<label for={name} class={className}>
-    <input type="checkbox" data-conditional={type} id={name} bind:checked={value} on:change={handleChange} {...$$restProps} />
+<label class={className} for={name}>
+    <input bind:checked={value} data-conditional={type} id={name} on:change={handleChange} type="checkbox" {...$$restProps} />
     {#if type === "checkbox"}
         <CheckIcon size="16" />
     {/if}

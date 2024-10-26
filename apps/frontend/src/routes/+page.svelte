@@ -1,10 +1,10 @@
 <script lang="ts">
-    import { onMount } from "svelte";
     import MemeCanvas from "$lib/components/domain/MemeCanvas.svelte";
+    import MemeCanvasElements from "$lib/components/domain/MemeCanvasElements.svelte";
+    import MemeCanvasOptions from "$lib/components/domain/MemeCanvasOptions.svelte";
     import MemeCanvasToolbar from "$lib/components/domain/MemeCanvasToolbar.svelte";
     import MemeContext from "$lib/components/domain/MemeContext.svelte";
-    import MemeCanvasOptions from "$lib/components/domain/MemeCanvasOptions.svelte";
-    import MemeCanvasElements from "$lib/components/domain/MemeCanvasElements.svelte";
+    import { onMount } from "svelte";
 
     let canvas: MemeCanvas;
     let context: MemeContext;
@@ -23,7 +23,7 @@
 
 <section class="h-[20vh] flex flex-col items-center justify-center">
     <div class="flex flex-row items-center justify-center gap-x-2">
-        <img class="h-16 w-16" src="/logo.svg" alt="Meme Maker Logo">
+        <img alt="Meme Maker Logo" class="h-16 w-16" src="/logo.svg">
         <h1>Meme Maker</h1>
     </div>
     <p>By <a href="https://lynith.dev/">Lynith</a></p>
