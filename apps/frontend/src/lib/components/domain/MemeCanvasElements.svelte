@@ -48,7 +48,7 @@
 
     // I hate svelte with typescript
     function elementsContainerClicked(e: any) {
-        if (e.target?.tagName.toLowerCase() !== "button") {
+        if (e.target?.tagName.toLowerCase() === "div") {
             e.stopImmediatePropagation();
             controller.clearSelected();
         }
